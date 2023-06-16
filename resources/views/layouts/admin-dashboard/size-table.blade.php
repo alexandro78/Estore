@@ -99,7 +99,7 @@
                         // Replace the input element with a paragraph
                         const textNode = document.createTextNode(input.value);
 
-                        event.preventDefault();
+                        // event.preventDefault();
                         event.preventDefault();
                         const data = {
                            size: input.value,

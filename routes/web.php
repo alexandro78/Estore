@@ -2,7 +2,8 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MainAdminController;
-
+use App\Http\Controllers\Frontend\MainFrontendController;
+use App\View\Components\FrontComponents\NewArrivals;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +25,7 @@ use App\Http\Controllers\Admin\MainAdminController;
 //     return view('layouts.admin-dashboard.product-table');
 // });
 
+////////////////////////////////////Admin routes///////////////////////////////////////////////
 Route::get('/', [MainAdminController::class, 'getHome'])->name('home');
 Route::get('/customers', [MainAdminController::class, 'getCustomers'])->name('customers');
 Route::get('/admin-profile', [MainAdminController::class, 'getAdminProfile'])->name('admin.profile');
@@ -56,11 +58,16 @@ Route::get('/edit-discount-page/{id}', [MainAdminController::class, 'editDiscoun
 Route::post('/update-discount/{id}', [MainAdminController::class, 'updateDiscount'])->name('update.discount');
 Route::get('/delete-discount/{id}', [MainAdminController::class, 'discountDelete'])->name('delete.discount');
 
-Route::get('/image/upload', [MainAdminController::class, 'showUploadForm'])->name('image.upload');
-Route::post('/image/upload', [MainAdminController::class, 'upload'])->name('image.upload.post');
 Route::get('/image-delete/{id}/{productId}', [MainAdminController::class, 'imageDeleteById'])->name('image.delete.by.id');
+// Route::get('/image/upload', [MainAdminController::class, 'showUploadForm'])->name('image.upload');
+// Route::post('/image/upload', [MainAdminController::class, 'upload'])->name('image.upload.post');
 
 ////////////////////////////////////Frontend routes///////////////////////////////////////////////
+Route::post('/add-to-cart', [NewArrivals::class, 'addToCart'])->name('cart.add');
+
+Route::get('/index', function () {
+    return view('layouts.frontend-user-side.home-content');
+});
 
 
 
@@ -69,8 +76,9 @@ Route::get('/image-delete/{id}/{productId}', [MainAdminController::class, 'image
 
 
 
-
-
+Route::get('/test-nav', [MainFrontendController::class, 'testSub']);
+// Route::get('/index', [MainFrontendController::class, 'showHeaderCategoryNav']);
+// Route::get('/test-sub', [MainFrontendController::class, 'showNewArrivalsSection']);
 // Route::get('/dashboard', function () {
 //     return view('dashboard');
 // })->middleware(['auth', 'verified'])->name('dashboard');

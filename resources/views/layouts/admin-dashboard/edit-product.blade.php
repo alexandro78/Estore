@@ -137,7 +137,6 @@
                             </div>
                         </x-slot>
                     </x-adminlte-input-file>
-                    {{-- <input fgroup-class="col-md-12" type="file" name="images[]" multiple> --}}
                 </div>
                 <div class="col-sm-8">
                     @foreach ($thumbnails as $imageId => $thumbnailPath)

@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('filename');
             $table->text('description')->nullable();
+            $table->boolean('is_main')->default(false);
+            $table->boolean('offer_area')->default(false);
             $table->timestamps();
             $table->foreignId('product_id')->nullable()->constrained('products')->cascadeOnDelete()->cascadeOnUpdate();
         });

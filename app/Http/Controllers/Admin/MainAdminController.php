@@ -33,6 +33,16 @@ class MainAdminController extends Controller
         return view('layouts.admin-dashboard.layout');
     }
 
+
+
+    function generateClosure($name) {
+        return function () use ($name) {
+            // Использование переменной $name из внешнего контекста
+            return "Hello, $name!";
+        };
+    }
+    
+
     public function getCustomers()
     {
         return view('layouts.admin-dashboard.customers-page');
@@ -103,6 +113,8 @@ class MainAdminController extends Controller
             foreach ($images as $image) {
                 // Создание экземпляра Intervention Image для каждого изображения
                 $img = Image::make($image);
+                $img->orientate();
+                
                 $newImage = new ImageModel();
                 $filename = $image->getClientOriginalName();
                 $newImage->filename = $filename;
@@ -110,7 +122,7 @@ class MainAdminController extends Controller
                 $newImage->save();
                 // Обработка каждого файла
 
-                $img->save(public_path('multimedia/' . $filename));
+                $img->save(public_path('images/multimedia/' . $filename));
                 // Дополнительные действия, такие как сохранение информации в базу данных
 
 
@@ -130,12 +142,12 @@ class MainAdminController extends Controller
 
         $thumbnails = [];
         foreach ($productFields->images as $image) {
-            $thumbnailPath = 'thumbnails/' . $image->filename; // Путь для сохранения миниатюры
+            $thumbnailPath = 'images/thumbnails/' . $image->filename; // Путь для сохранения миниатюры
             $thumbnailExists = file_exists(public_path($thumbnailPath)); // Проверка наличия миниатюры
             if ($thumbnailExists) {
                 $thumbnails[$image->id] = $thumbnailPath;
             } else {
-                $thumbnail = Image::make(public_path('multimedia/' . $image->filename))->fit(100, 100);
+                $thumbnail = Image::make(public_path('images/multimedia/' . $image->filename))->fit(100, 100);
                 $thumbnail->save(public_path($thumbnailPath));
                 $thumbnails[$image->id] = $thumbnailPath;
             }
@@ -252,6 +264,8 @@ class MainAdminController extends Controller
             foreach ($images as $image) {
                 // Создание экземпляра Intervention Image для каждого изображения
                 $img = Image::make($image);
+                $img->orientate();
+
                 $newImage = new ImageModel();
                 $filename = $image->getClientOriginalName();
                 $newImage->filename = $filename;
@@ -259,7 +273,7 @@ class MainAdminController extends Controller
                 $newImage->save();
                 // Обработка каждого файла
 
-                $img->save(public_path('multimedia/' . $filename));
+                $img->save(public_path('images/multimedia/' . $filename));
                 // Дополнительные действия, такие как сохранение информации в базу данных
 
 
@@ -466,43 +480,35 @@ class MainAdminController extends Controller
     }
 
 
-    public function showUploadForm()
-    {
-        // В контроллере или представлении
+    // public function showUploadForm()
+    // {
+    //     return view('layouts.admin-dashboard.test-image-work');
+    // }
 
-        // $image = ImageModel::find(1); // Предположим, что у вас есть идентификатор изображения
-        // $productName = $image->product->name; // Получаем имя товара из связанной модели Product
+    // public function upload(Request $request, $id)
+    // {
+    //     $product = Product::find($id);
+    //     $images = $request->file('images');
+    //     if ($images) {
+    //         foreach ($images as $image) {
+    //             // Создание экземпляра Intervention Image для каждого изображения
+    //             $img = Image::make($image);
+    //             $newImage = new ImageModel();
+    //             $filename = $image->getClientOriginalName();
+    //             $newImage->filename = $filename;
+    //             $newImage->product_id = $product->id;
+    //             $newImage->save();
+    //             // Обработка каждого файла
 
-        return view('layouts.admin-dashboard.test-image-work', [
-            // 'productName' => $productName,
-            // 'fileName' => $image->filename
-        ]);
-    }
-
-    public function upload(Request $request, $id)
-    {
-        $product = Product::find($id);
-        $images = $request->file('images');
-        if ($images) {
-            foreach ($images as $image) {
-                // Создание экземпляра Intervention Image для каждого изображения
-                $img = Image::make($image);
-                $newImage = new ImageModel();
-                $filename = $image->getClientOriginalName();
-                $newImage->filename = $filename;
-                $newImage->product_id = $product->id;
-                $newImage->save();
-                // Обработка каждого файла
-
-                $img->save(public_path('multimedia/' . $filename));
-                // Дополнительные действия, такие как сохранение информации в базу данных
+    //             $img->save(public_path('multimedia/' . $filename));
+    //             // Дополнительные действия, такие как сохранение информации в базу данных
 
 
-                // Очистка экземпляра Intervention Image после обработки каждого изображения
-            }
-            $img->destroy();
-            return 'Изображение успешно загружено и добавлено в базу данных.';
-        }
-        return 'Изображение было загружено.';
-    }
+    //             // Очистка экземпляра Intervention Image после обработки каждого изображения
+    //         }
+    //         $img->destroy();
+    //         return 'Изображение успешно загружено и добавлено в базу данных.';
+    //     }
+    //     return 'Изображение было загружено.';
+    // }
 }

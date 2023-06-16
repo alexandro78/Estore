@@ -36,6 +36,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function freeShipping()
+    {
+        return $this->belongsTo(FreeShipping::class);
+    }
+
     public function size()
     {
         return $this->belongsTo(Size::class);

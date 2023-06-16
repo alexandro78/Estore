@@ -27,11 +27,14 @@ return new class extends Migration
             $table->date('date_add');
             $table->date('date_update')->nullable();
             $table->integer('quantity');
+            $table->boolean('bestseller')->default(false);
+            $table->boolean('offer_area')->default(false);
             $table->timestamps();
             
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete()->cascadeOnUpdate(); /* ('id')->on('categories')->nullOnDelete(); */
             $table->foreignId('size_id')->nullable()->constrained('sizes')->nullOnDelete()->cascadeOnUpdate(); /* references('id')->on('sizes'); */
             $table->foreignId('discount_id')->nullable()->constrained('discounts')->nullOnDelete()->cascadeOnUpdate(); /* references('id')->on('discounts'); */
+            $table->foreignId('free_shipping_id')->nullable()->constrained('free_shippings')->nullOnDelete()->cascadeOnUpdate();
         });
     }
 
