@@ -1534,7 +1534,7 @@ img {
 }
 
 .widget.color .widget-desc ul li.red a {
-    background-color: #fd4f4f;
+    background-color: red;
 }
 
 .widget.color .widget-desc ul li.yellow a {
@@ -1546,12 +1546,48 @@ img {
 }
 
 .widget.color .widget-desc ul li.teal a {
-    background-color: #bc83b1;
+    background-color: #007c7c;
 }
 
 .widget.color .widget-desc ul li.cyan a {
     background-color: #9ee7f4;
 }
+
+.widget.color .widget-desc ul li.orange a {
+    background-color: orange;
+}
+
+.widget.color .widget-desc ul li.beige a {
+    background-color: beige;
+}
+
+.widget.color .widget-desc ul li.brown a {
+    background-color: #914900;
+}
+
+.widget.color .widget-desc ul li.purple a {
+    background-color: purple;
+}
+
+.widget.color .widget-desc ul li.blue a {
+    background-color: blue;
+}
+
+.widget.color .widget-desc ul li.pink a {
+    background-color: pink;
+}
+
+.widget.color .widget-desc ul li.black a {
+    background-color: black;
+}
+
+.widget.color .widget-desc ul li.white a {
+    background-color: white;
+    border: 1px solid;
+    border-color: black 2px solid;
+}
+
+
 
 .widget.color .widget-desc ul li a:after {
     width: calc(100% + 6px);

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('color');
+            $table->string('color_code');
             $table->integer('in_stock');
             $table->decimal('price', 10, 2);
             // $table->unsignedBigInteger('size_id')->nullable();

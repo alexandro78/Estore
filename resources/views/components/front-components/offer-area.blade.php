@@ -4,6 +4,7 @@
     <div class="container h-100">
         <div class="row h-100 align-items-end justify-content-end">
             <div class="col-12 col-md-8 col-lg-6">
+                @if($product)
                 <div class="offer-content-area wow fadeInUp" data-wow-delay="1s">
                     <h2>{{$product->name}}<span class="karl-level">Hot</span></h2>
                     <p>{{ isset($product->freeShipping) ? $product->freeShipping->title : '' }}</p>
@@ -12,6 +13,7 @@
                     </div>
                     <a href="#" class="btn karl-btn mt-30">Отримати зараз</a>
                 </div>
+                @endif
             </div>
         </div>
     </div>

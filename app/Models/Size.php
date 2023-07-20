@@ -9,6 +9,8 @@ class Size extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['size'];
+
     public function products()
     {
         return $this->hasMany(Product::class);

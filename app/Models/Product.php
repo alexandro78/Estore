@@ -14,6 +14,7 @@ class Product extends Model
         'article',
         'description',
         'color',
+        'color_code',
         'in_stock',
         'price',
         'brand',

@@ -255,6 +255,7 @@ class MainAdminController extends Controller
             'category_id' => $categoryId,
             'size_id' => $sizeId,
             'discount_id' => $discountId,
+            'color_code' => $request->input('color_code')
         ];
         $product = new Product($data);
         $product->save();

@@ -57,7 +57,7 @@
                 <div class="col-sm-2">
                     <x-adminlte-input name="price" type="text" label="Ціна" fgroup-class="col-md-12" />
                 </div>
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <x-adminlte-select fgroup-class="col-md-12" type="text" name="category" label="Категорія"
                         title="Наявність товару">
                         @foreach ($categories as $category)
@@ -65,6 +65,27 @@
                         @endforeach
                     </x-adminlte-select>
                 </div>
+                <div class="col-sm-2">
+                    <x-adminlte-select fgroup-class="col-md-12" type="text" name="color_code" label="Колір фільтрації"
+                        title="Базовий колір фільтрації">
+                        <option value="default" selected>-----</option>
+                        <option value="#d7d7d7">Сірий</option>
+                        <option value="red">Червоний</option>
+                        <option value="#fcf29c">Жовтий</option>
+                        <option value="#8fc99c">Зелений</option>
+                        <option value="white">Білий</option>
+                        <option value="#bc83b1">Бірюзовий</option>
+                        <option value="#9ee7f4">Світло блакитний</option>
+                        <option value="blue">Синій</option>
+                        <option value="purple">Фіолетовий</option>
+                        <option value="pink">Розовий</option>
+                        <option value="#914900">Коричневий</option>
+                        <option value="black">Чорний</option>
+                        <option value="beige">Бежевий</option>
+                        <option value="orange">Помаранчовий</option>
+                    </x-adminlte-select>
+                </div>
+
                 <div class="col-sm-2">
                     <x-adminlte-input name="color" type="text" label="Колір" fgroup-class="col-md-12" />
                 </div>
@@ -96,7 +117,8 @@
                 </div>
                 <div class="col-sm-4">
                     <br>
-                    <x-adminlte-input-file name="images[]" igroup-size="sm" placeholder="Завантажити зображення" label="Завантажити декілька зображень" multiple>
+                    <x-adminlte-input-file name="images[]" igroup-size="sm" placeholder="Завантажити зображення"
+                        label="Завантажити декілька зображень" multiple>
                         <x-slot name="prependSlot">
                             <div class="input-group-text bg-lightblue">
                                 <i class="fas fa-upload"></i>
@@ -110,7 +132,8 @@
                 <div class="col-sm-12">
                     <x-adminlte-text-editor name="description" label="Опис" igroup-size="sm"
                         placeholder="Інформація про товар..." :config="$config" />
-                    <x-adminlte-button type="submit" name="save_item" label="Зберегти" theme="primary" icon="fas" />
+                    <x-adminlte-button type="submit" name="save_item" label="Зберегти" theme="primary"
+                        icon="fas" />
                 </div>
             </div>
             <br><br>
@@ -121,7 +144,8 @@
         labels.forEach(label => {
             const labelText = label.innerText.trim();
             if (labelText !== 'Країна' && labelText !== 'Виробник' && labelText !== 'Дата оновлення' &&
-                labelText !== 'Знижка' && labelText !== 'Опис' && labelText !== 'Завантажити зображення' && labelText !== 'Завантажити декілька зображень') {
+                labelText !== 'Знижка' && labelText !== 'Опис' && labelText !== 'Завантажити зображення' &&
+                labelText !== 'Завантажити декілька зображень') {
                 label.innerHTML += '<span style="color: red;">*</span>';
             }
         });

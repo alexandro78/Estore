@@ -1,26 +1,9 @@
-<?php 
+<?php
 
-class Hello {
-    public function hello() {
-     
-    }
-}
-
-
-
-
-
-
-function b()
+function dania($param1, $param2)
 {
-    function c(){
-        print('from c');
-    }
-    
-    c();
-    print("\n");
-    print(555);
+    return $param1 + $param2;
 }
 
-b();
-print('');
+
+dania(4, 5);

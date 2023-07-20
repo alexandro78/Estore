@@ -6,20 +6,15 @@ use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 use App\Models\Category;
-use App\Models\NavMenu;
 
-class Header extends Component
+class Categories extends Component
 {
-
-    public $navItems;
     public $categories;
-    
-    // /**
-    //  * Create a new component instance.
-    //  */
+    /**
+     * Create a new component instance.
+     */
     public function __construct()
     {
-        $this->navItems = NavMenu::with('getSubItem')->whereNull('parent_id')->get();
         $this->categories = Category::with('children')->whereNull('parent_id')->get();
     }
 
@@ -28,6 +23,6 @@ class Header extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.front-components.header');
+        return view('components.front-components.categories');
     }
 }

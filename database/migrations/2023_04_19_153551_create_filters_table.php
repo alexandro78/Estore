@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
-{
+{   
     /**
      * Run the migrations.
      */
@@ -13,16 +13,11 @@ return new class extends Migration
     {
         Schema::create('filters', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->boolean('is_active')->default(true);
-            $table->decimal('price', 10, 2);
-            $table->boolean('available')->default(true);
-            $table->string('color');
-            $table->enum('gender', ['male', 'female', 'unisex']);
-            $table->string('category');
-            $table->dateTime('date_add');
-            $table->string('brand');
-            $table->decimal('discount', 10, 2)->default(0);
+            $table->integer('min_price')->nullable();
+            $table->integer('max_price')->nullable();
+            $table->string('color_filter')->nullable();
+            $table->enum('size_filter', ['NULL', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'])->default('NULL')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }
