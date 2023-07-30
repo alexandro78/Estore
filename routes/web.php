@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MainAdminController;
@@ -6,6 +7,7 @@ use App\Http\Controllers\Frontend\MainFrontendController;
 use App\View\Components\FrontComponents\NewArrivals;
 use App\Http\Livewire\FrontLivewireComponents\ShowProductsTape;
 use App\Http\Livewire\FrontLivewireComponents\FilterSideBar;
+use App\Http\Livewire\FrontLivewireComponents\QuickViewModalComponent;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,10 +77,11 @@ Route::post('/price-filter', [FilterSideBar::class, 'updateValues'])->name('pric
 Route::post('/color-filter', [FilterSideBar::class, 'updateColor'])->name('color.filter');
 Route::post('/size-filter', [FilterSideBar::class, 'updateSize'])->name('size.filter');
 Route::get('/products', [MainFrontendController::class, 'showProducts'])->name('products');
+Route::post('/add-to-cart-from-modal', [QuickViewModalComponent::class, 'addToCardFromModal'])->name('add.to.cart-.from.modal');
 
-
-
-
+Route::get('/', function () {
+    return view('common-test');
+});
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Route::get('/dashboard', function () {

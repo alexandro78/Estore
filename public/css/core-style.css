@@ -1171,6 +1171,10 @@ img {
     display: block;
 }
 
+.product-description .added-marker.add-to-cart-btn {
+    color: #14c97e;
+}
+
 .product-description .add-to-cart-btn:hover {
     color: #2a2a2a;
 }

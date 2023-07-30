@@ -1,6 +1,6 @@
 @extends('layouts.frontend-user-side.index-page')
 @section('content')
-    <livewire:front-livewire-components.quick-view-modal-component />
+    <livewire:front-livewire-components.quick-view-modal-component/>
     <!-- початок секції показу товарів -->
     <section class="shop_grid_area section_padding_100">
         <div class="container">
@@ -10,7 +10,7 @@
                         <div class="widget catagory mb-50">
                             <!--  Side Nav  -->
                             <div class="nav-side-menu">
-                                <h6 class="mb-0">Catagories888</h6>
+                                <h6 class="mb-0">Catagories</h6>
                                 <div class="menu-list">
                                     <ul id="menu-content2" class="menu-content collapse out">
                                         <!-- Single Item -->

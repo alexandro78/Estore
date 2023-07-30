@@ -6,18 +6,14 @@ use Illuminate\Http\Request;
 use Livewire\Component;
 use App\Models\Filter;
 use App\Models\Product;
-// use App\Models\Size;
 
 class FilterSideBar extends Component
 {
-
 
     public $minValue = 0;
     public $maxValue = 10000;
     public $products;
     public $colorCode;
-    // public $sizes;
-
 
     public function __construct()         
     {
@@ -26,15 +22,6 @@ class FilterSideBar extends Component
         ->groupBy('color_code')
         ->get();
     }
-
-    // public function updateColorCode($code)
-    // { 
-    //     Filter::updateOrCreate(
-    //         ['user_id' => 1],
-    //         ['color_filter' => $code]
-    //     );
-    //     // $this->emit('updateFilter');
-    // }
 
     public function updateValues(Request $request)
     {
@@ -46,8 +33,6 @@ class FilterSideBar extends Component
             ['user_id' => 1],
             ['min_price' => $this->minValue, 'max_price' => $this->maxValue]
         );
-        // $this->emit('updatePriceFilter');
-
         return response()->json(['minVal' => $this->minValue, 'maxVal' => $this->maxValue, 'filter' => $filter]);
     }
 
@@ -58,7 +43,6 @@ class FilterSideBar extends Component
             ['user_id' => 1],
             ['color_filter' => $data['color']]
         );
-        // $this->emit('updateFilter');
     }
 
     public function updateSize(Request $request){
@@ -68,7 +52,6 @@ class FilterSideBar extends Component
             ['user_id' => 1],
             ['size_filter' => $data['size']]
         );
-        // $this->emit('updateColorFilter');
     }
 
     public function render()
