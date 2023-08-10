@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use App\Models\NavMenu;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\Filter;
+use App\Models\SizeDetail;
+use App\Models\Size;
+use Illuminate\Support\Facades\Auth;
 
 class MainFrontendController extends Controller
 {
@@ -76,5 +80,59 @@ class MainFrontendController extends Controller
     public function showHome()
     {
         return view('layouts.frontend-user-side.home-content');
+    }
+
+    public function showSinglePage($id)
+    {
+        $product = Product::find($id);
+        $sizes = $product->sizes;
+        return view('layouts.frontend-user-side.single-product-page', [
+            'product' => $product,
+            'sizes' => $sizes
+        ]);
+    }
+
+    public function getProductBySize($id, $productSizeId)
+    {
+        $product = Product::find($id);
+        $sizes = $product->sizes;
+        $sizeEntry = Size::find($productSizeId);
+
+        if ($sizeEntry) {
+            $sizeName = $sizeEntry->size;
+            $sizeDetail = $product->sizeDetails->filter(function ($sizeDetail) use ($sizeName) {
+                return $sizeDetail->size_name == $sizeName;
+            })->first();
+        }
+
+        return view('layouts.frontend-user-side.single-product-page', [
+            'product' => $product,
+            'sizes' => $sizes,
+            'productSizeId' => $productSizeId,
+            'sizeDetail' => $sizeDetail
+        ]);
+    }
+
+    public function addToCartFromSingleProductPage(Request $request, $id, $price)
+    {
+        if (Auth::check()) {
+            $quantity = $request->input('quantity');
+
+        } else {
+            $cart = Session::get('cart', []);
+            $quantity = $request->input('quantity');
+
+            $cart[$id] = [
+                'quantity' => $quantity,
+                'price' => $price,
+                'total' => $price * $quantity
+            ];
+
+            Session::put('cart', $cart);
+            $my_cart = Session::get('cart');
+            dump($my_cart);
+        }
+
+        // return redirect()->back();
     }
 }

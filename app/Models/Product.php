@@ -42,9 +42,19 @@ class Product extends Model
         return $this->belongsTo(FreeShipping::class);
     }
 
+    public function sizes()
+    {
+        return $this->belongsToMany(Size::class);
+    }
+
     public function size()
     {
         return $this->belongsTo(Size::class);
+    }
+
+    public function sizeDetails()
+    {
+        return $this->hasMany(SizeDetail::class);
     }
 
     public function discount()

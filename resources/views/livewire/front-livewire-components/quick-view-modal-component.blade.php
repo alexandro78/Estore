@@ -33,9 +33,9 @@
                                             <h5 class="price">{{ optional($product)->price ?? '' }}</h5>
                                         @endif
                                         <p>{{ optional($product)->description ?? '' }}</p>
-                                        <a href="#">View Full Product Details {{ $productId }}</a>
+                                        <a href="{{route('go.to.single.product', ['id' => optional($product)->id ?? 1])}}">go to single product</a>
                                     </div>
-                                    <!-- Add to Cart Form -->
+                                    <!-- Add to Cart Form" -->
                                     <form class="cart">
                                         <div class="quantity">
                                             <span class="qty-minus"

@@ -23,10 +23,10 @@
 </head>
 
 <body>
-    @include('layouts.frontend-user-side.header')
+    @include('child-test-header1')
     @yield('content')
-    @include('layouts.frontend-user-side.footer')
-    </div>
+    @include('child-test-footer1')
+</div>
     @livewireScripts
     <!-- /.wrapper end -->
     <!-- jQuery (Necessary for All JavaScript Plugins) -->
@@ -37,8 +37,7 @@
     <script src="{{ asset('js/bootstrap.min.js') }}"></script>
     <!-- Plugins js -->
     <script src="{{ asset('js/plugins.js') }}"></script>
-    
     <!-- Active js -->
-    <script src="{{ asset('js/active.js') }}"></script>
+    <script src=" {{ asset('js/active.js') }}"></script>
 </body>
 </html>

@@ -15,4 +15,10 @@ class Size extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    //many to many relations
+    public function relatedProducts()
+    {
+        return $this->belongsToMany(Product::class);
+    }
 }

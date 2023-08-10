@@ -78,9 +78,17 @@ Route::post('/color-filter', [FilterSideBar::class, 'updateColor'])->name('color
 Route::post('/size-filter', [FilterSideBar::class, 'updateSize'])->name('size.filter');
 Route::get('/products', [MainFrontendController::class, 'showProducts'])->name('products');
 Route::post('/add-to-cart-from-modal', [QuickViewModalComponent::class, 'addToCardFromModal'])->name('add.to.cart-.from.modal');
+Route::get('/single-page/{id}', [MainFrontendController::class, 'showSinglePage'])->name('go.to.single.product');
+Route::get('/product-size/{id}/{productSizeId}', [MainFrontendController::class, 'getProductBySize'])->name('get.product.by.size');
+Route::post('/cart-add-from-single-product-page/{id}/{price}', [MainFrontendController::class, 'addToCartFromSingleProductPage'])->name('cart.add.from.single.product.page');
+
 
 Route::get('/', function () {
     return view('common-test');
+});
+
+Route::get('/hh', function () {
+    return view('child-test1');
 });
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -2141,3 +2141,14 @@ img {
     line-height: 2;
     color: #9f9f9f;
 }
+
+
+/* castom style for size li in single-product-page.blade.php */
+.li-size-elem {
+    background-color: #ff084e;
+}
+
+.li-size-elem a {
+    color: white !important;
+    border: 2px solid #ff084e !important;
+}
