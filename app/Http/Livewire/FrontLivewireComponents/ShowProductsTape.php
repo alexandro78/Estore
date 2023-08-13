@@ -4,6 +4,7 @@ namespace App\Http\Livewire\FrontLivewireComponents;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\Session;
 use App\Models\Filter;
 use App\Models\Product;
 use App\Models\Cart;
@@ -17,7 +18,7 @@ class ShowProductsTape extends Component
     private $products;
     public $allCartItems;
     public $productIdsInCart;
-    // public $addedToCart = [];
+    public $sessionCart;
 
     protected $listeners = [
         'updateFilter',
@@ -34,26 +35,41 @@ class ShowProductsTape extends Component
         $this->updateFilter();
         $this->allCartItems = Cart::where('customer_id', 1)->get();
         $this->productIdsInCart = $this->allCartItems->pluck('product_id')->toArray();
+        $this->sessionCart = Session::get('cart');
     }
 
     public function addToCart($productId)
     {
+        $product = Product::findOrFail($productId);
         $cartItem = Cart::where('customer_id', 1)
-            ->where('product_id', $productId)
-            ->first();
+                ->where('product_id', $productId)
+                ->first();
+        if (1 != 1) { /* Auth::check() */
 
-        if (!$cartItem) {
-            $product = Product::findOrFail($productId);
-            $customerId = 1;
-            $cart = new Cart();
-            $cart->quantity = 1;
-            $cart->total = $product->price;
-            $cart->customer_id = $customerId;
-            $cart->product_id = $productId;
-            $cart->save();
+            if (!$cartItem) {
+                $customerId = 1;
+                $cart = new Cart();
+                $cart->quantity = $product->quantity;
+                $cart->total = isset($product->discount) ? ($product->price - $product->discount->price_off) * $product->quantity : $product->price * $product->quantity;
+                $cart->customer_id = $customerId;
+                $cart->product_id = $productId;
+                $cart->save();
+            }
+            $this->allCartItems = Cart::where('customer_id', 1)->get();
+            $this->productIdsInCart = $this->allCartItems->pluck('product_id')->toArray();
+        } else {
+            $cart = Session::get('cart', []);
+
+            $cart[$productId] = [
+                'productName' => $product->name,
+                'productDescription' => $product->description,
+                'quantity' => $product->quantity,
+                'price' => isset($product->discount) ? $product->price - $product->discount->price_off : $product->price,
+                'total' => isset($product->discount) ? ($product->price - $product->discount->price_off) * $product->quantity : $product->price * $product->quantity
+            ];
+            Session::put('cart', $cart);
+            $this->sessionCart = Session::get('cart');
         }
-        $this->allCartItems = Cart::where('customer_id', 1)->get();
-        $this->productIdsInCart = $this->allCartItems->pluck('product_id')->toArray();
     }
 
     public function updateFilter()

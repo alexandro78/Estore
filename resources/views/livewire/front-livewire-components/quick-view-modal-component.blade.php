@@ -33,10 +33,13 @@
                                             <h5 class="price">{{ optional($product)->price ?? '' }}</h5>
                                         @endif
                                         <p>{{ optional($product)->description ?? '' }}</p>
-                                        <a href="{{route('go.to.single.product', ['id' => optional($product)->id ?? 1])}}">go to single product</a>
+                                        <a
+                                            href="{{ route('go.to.single.product', ['id' => optional($product)->id ?? 1]) }}">go
+                                            to single product</a>
                                     </div>
                                     <!-- Add to Cart Form" -->
                                     <form class="cart">
+                                        <input type="hidden" id="csrfToken" value="{{ csrf_token() }}">
                                         <div class="quantity">
                                             <span class="qty-minus"
                                                 onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i
@@ -49,7 +52,28 @@
                                                 onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i
                                                     class="fa fa-plus" aria-hidden="true"></i></span>
                                         </div>
-                                        <button style="{{ isset($checkIfItemAdded) ? 'background-color: green; color: white;' : ''}}" type="submit" name="addtocart" value="{{ $productId }}" class="cart-submit">{{ isset($checkIfItemAdded) ? 'Added' : 'Add to cart'}}</button>
+                                        
+                                        @if (1 != 1)
+                                            {{-- auth()->check() --}}
+                                            @if (isset($checkIfItemAdded))
+                                                <button style="background-color: green; color: white;" type="submit"
+                                                    name="addtocart" value="{{ $productId }}"
+                                                    class="cart-submit">Added</button>
+                                            @else
+                                                <button type="submit" name="addtocart" value="{{ $productId }}"
+                                                    class="cart-submit">ADD TO CART</button>
+                                            @endif
+                                        @else
+                                            @if ($sessionCartItem)
+                                                <button style="background-color: green; color: white;" type="submit"
+                                                    name="addtocart" value="{{ $productId }}"
+                                                    class="cart-submit">Added</button>
+                                            @else
+                                                <button type="submit" name="addtocart" value="{{ $productId }}"
+                                                    class="cart-submit">ADD TO CART</button>
+                                            @endif
+                                        @endif
+
                                         <!-- Wishlist -->
                                         <div class="modal_pro_wishlist">
                                             <a href="wishlist.html" target="_blank"><i class="ti-heart"></i></a>
@@ -88,12 +112,13 @@
                 addToCartButton.addEventListener('click', function() {
                     event.preventDefault();
                     const quantityValue = quantityInput.value;
+                    const csrfToken = document.getElementById('csrfToken').value;
                     var productId = addToCartButton.getAttribute('value');
                     addToCartButton.style.backgroundColor = 'green';
                     addToCartButton.textContent = 'Added';
                     console.log(quantityValue); // Вы можете здесь использовать значение по вашему усмотрению
                     console.log(productId); // Вы можете здесь использовать значение по вашему усмотрению
-                    
+
                     const data = {
                         quantity: quantityValue,
                         productId: productId,

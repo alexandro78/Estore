@@ -73,8 +73,8 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-md-6">
-                    <div  id="size-section" class="single_product_desc">
+                <div id="cart-anchor" class="col-12 col-md-6">
+                    <div id="size-section" class="single_product_desc">
 
                         <h4 class="title"><a href="#"> {{ $product->name }}</a></h4>
                         @if (isset($product) && !is_null($product->discount))
@@ -116,8 +116,9 @@
                         </div>
 
                         <!-- Add to Cart Form -->
-                        <form class="cart clearfix mb-50 d-flex" method="post" action="{{ route('cart.add.from.single.product.page', ['id' => $product->id, 'price' => $product->price]) }}">
-                           @csrf
+                        <form class="cart clearfix mb-50 d-flex" method="post"
+                            action="{{ route('cart.add.from.single.product.page', ['id' => $product->id, 'price' => $product->price]) }}#cart-anchor">
+                            @csrf
                             <div class="quantity">
                                 <span class="qty-minus"
                                     onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i
@@ -128,8 +129,25 @@
                                     onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i
                                         class="fa fa-plus" aria-hidden="true"></i></span>
                             </div>
-                            <button type="submit" name="addtocart" value="5" class="btn cart-submit d-block">Add
-                                to cart 777</button>
+                            
+                            @if (1 == 1)
+                                {{-- auth()->check() --}}
+                                @if ($cartItem)
+                                    <button style="background-color: green;" type="submit" name="addtocart"
+                                        value="5" class="btn cart-submit d-block">ADDED3</button>
+                                @else
+                                    <button type="submit" name="addtocart" value="5"
+                                        class="btn cart-submit d-block">ADD TO CART 111</button>
+                                @endif
+                            @else
+                                @if ($sessionCart)
+                                    <button style="background-color: green;" type="submit" name="addtocart"
+                                        value="5" class="btn cart-submit d-block">ADDED</button>
+                                @else
+                                    <button type="submit" name="addtocart" value="5"
+                                        class="btn cart-submit d-block">ADD TO CART 222</button>
+                                @endif
+                            @endif
                         </form>
 
                         <div id="accordion" role="tablist">
@@ -159,7 +177,7 @@
                                     data-parent="#accordion">
                                     <div class="card-body">
                                         @if (isset($productSizeId) && isset($sizeDetail))
-                                        <p>{{ $sizeDetail->description }} </p>
+                                            <p>{{ $sizeDetail->description }} </p>
                                         @else
                                             <p>Оберіть розмір щоб побачити його деталі!</p>
                                         @endif
@@ -242,7 +260,7 @@
                                                     class="fa fa-plus" aria-hidden="true"></i></span>
                                         </div>
                                         <button type="submit" name="addtocart" value="5" class="cart-submit">Add
-                                            to cart</button>
+                                            to cart 881</button>
                                         <!-- Wishlist -->
                                         <div class="modal_pro_wishlist">
                                             <a href="wishlist.html" target="_blank"><i class="ti-heart"></i></a>
@@ -300,7 +318,7 @@
                                 <h4 class="product-price">$39.90</h4>
                                 <p>Jeans midi cocktail dress</p>
                                 <!-- Add to Cart -->
-                                <a href="#" class="add-to-cart-btn">ADD TO CART</a>
+                                <a href="#" class="add-to-cart-btn">ADD TO CART 1</a>
                             </div>
                         </div>
 
@@ -319,7 +337,7 @@
                                 <h4 class="product-price">$39.90</h4>
                                 <p>Jeans midi cocktail dress</p>
                                 <!-- Add to Cart -->
-                                <a href="#" class="add-to-cart-btn">ADD TO CART</a>
+                                <a href="#" class="add-to-cart-btn">ADD TO CART 2</a>
                             </div>
                         </div>
 
@@ -338,7 +356,7 @@
                                 <h4 class="product-price">$39.90</h4>
                                 <p>Jeans midi cocktail dress</p>
                                 <!-- Add to Cart -->
-                                <a href="#" class="add-to-cart-btn">ADD TO CART</a>
+                                <a href="#" class="add-to-cart-btn">ADD TO CART 3</a>
                             </div>
                         </div>
 
@@ -357,7 +375,7 @@
                                 <h4 class="product-price">$39.90</h4>
                                 <p>Jeans midi cocktail dress</p>
                                 <!-- Add to Cart -->
-                                <a href="#" class="add-to-cart-btn">ADD TO CART</a>
+                                <a href="#" class="add-to-cart-btn">ADD TO CART 4</a>
                             </div>
                         </div>
 
@@ -376,7 +394,7 @@
                                 <h4 class="product-price">$39.90</h4>
                                 <p>Jeans midi cocktail dress</p>
                                 <!-- Add to Cart -->
-                                <a href="#" class="add-to-cart-btn">ADD TO CART</a>
+                                <a href="#" class="add-to-cart-btn">ADD TO CART 5</a>
                             </div>
                         </div>
                     </div>

@@ -82,6 +82,12 @@ Route::get('/single-page/{id}', [MainFrontendController::class, 'showSinglePage'
 Route::get('/product-size/{id}/{productSizeId}', [MainFrontendController::class, 'getProductBySize'])->name('get.product.by.size');
 Route::post('/cart-add-from-single-product-page/{id}/{price}', [MainFrontendController::class, 'addToCartFromSingleProductPage'])->name('cart.add.from.single.product.page');
 
+////////////////////////////////**** blade template routes ****////////////////////////////////////////////
+Route::get('/cart', [MainFrontendController::class, 'showCartPage'])->name('cart');
+Route::post('/update-cart', [MainFrontendController::class, 'updateCartPage'])->name('update.cart');
+
+
+
 
 Route::get('/', function () {
     return view('common-test');

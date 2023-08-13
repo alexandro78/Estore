@@ -4,12 +4,14 @@
             @if ($products)
                 @foreach ($products as $product)
                     <!-- Single gallery Item -->
-                    <div class="col-12 col-sm-6 col-lg-4 single_gallery_item wow fadeInUpBig" data-wow-delay="0.2s" wire:click="$emit('updateFilter')">
+                    <div class="col-12 col-sm-6 col-lg-4 single_gallery_item wow fadeInUpBig" data-wow-delay="0.2s"
+                        wire:click="$emit('updateFilter')">
                         <!-- Product Image -->
                         <div class="product-img">
                             <img src="img/product-img/product-1.jpg" alt="">
-                            <div class="product-quicview" wire:click="$emit('clickedOnModal', {{$product->id}})">
-                                <a href="#" data-toggle="modal" data-target="#quickview"><i class="ti-plus"></i></a>
+                            <div class="product-quicview" wire:click="$emit('clickedOnModal', {{ $product->id }})">
+                                <a href="#" data-toggle="modal" data-target="#quickview"><i
+                                        class="ti-plus"></i></a>
                             </div>
                         </div>
                         <!-- Product Description -->
@@ -17,10 +19,22 @@
                             <h4 class="product-price">$ {{ $product->price }}</h4>
                             <p>{{ $product->name }} {{ $product->description }}</p>
                             <!-- Add to Cart -->
-                            @if (isset($productIdsInCart) && in_array($product->id, $productIdsInCart))
-                            <a href="#" class="added-marker add-to-cart-btn" wire:click="addToCart({{ $product->id }})">ADDED</a>
+                            @if (1 != 1) {{-- auth()->check() --}}
+                                @if (isset($productIdsInCart) && in_array($product->id, $productIdsInCart))
+                                    <a href="#" class="added-marker add-to-cart-btn"
+                                        wire:click="addToCart({{ $product->id }})">ADDED111</a>
+                                @else
+                                    <a href="#" class="add-to-cart-btn"
+                                        wire:click="addToCart({{ $product->id }})">ADD TO CART111</a>
+                                @endif
                             @else
-                                <a href="#" class="add-to-cart-btn" wire:click="addToCart({{ $product->id }})">ADD TO CART</a>
+                                @if (isset($sessionCart) && array_key_exists($product->id, $sessionCart))
+                                    <a href="#" class="added-marker add-to-cart-btn"
+                                        wire:click="addToCart({{ $product->id }})">ADDED2222</a>
+                                @else
+                                    <a href="#" class="add-to-cart-btn"
+                                        wire:click="addToCart({{ $product->id }})">ADD TO CART3333</a>
+                                @endif
                             @endif
                         </div>
                     </div>

@@ -84,11 +84,24 @@ class MainFrontendController extends Controller
 
     public function showSinglePage($id)
     {
+        $cartItem = Cart::where('customer_id', 1)
+            ->where('product_id', $id)
+            ->first();
+
+        $cart = Session::get('cart');
+        if (isset($cart) && isset($cart[$id])) {
+            $sessionCart = true;
+        } else {
+            $sessionCart = false;
+        }
+
         $product = Product::find($id);
         $sizes = $product->sizes;
         return view('layouts.frontend-user-side.single-product-page', [
             'product' => $product,
-            'sizes' => $sizes
+            'sizes' => $sizes,
+            'cartItem' => $cartItem,
+            'sessionCart' => $sessionCart
         ]);
     }
 
@@ -115,24 +128,85 @@ class MainFrontendController extends Controller
 
     public function addToCartFromSingleProductPage(Request $request, $id, $price)
     {
-        if (Auth::check()) {
-            $quantity = $request->input('quantity');
+        $quantity = $request->input('quantity');
+        $product = Product::findOrFail($id);
 
+        if (1 != 1) { /* Auth::check() */
+
+            $cartItem = Cart::where('customer_id', 1)
+                ->where('product_id', $id)
+                ->first();
+
+            if (!$cartItem) {
+                $customerId = 1;
+                $cart = new Cart();
+                $cart->quantity = $quantity;
+                $cart->total = isset($product->discount) ? ($price - $product->discount->price_off) * $quantity : $price * $quantity;
+                $cart->customer_id = $customerId;
+                $cart->product_id = $id;
+                $cart->save();
+            }
         } else {
             $cart = Session::get('cart', []);
-            $quantity = $request->input('quantity');
 
             $cart[$id] = [
+                'productName' => $product->name,
+                'productDescription' => $product->description,
                 'quantity' => $quantity,
-                'price' => $price,
-                'total' => $price * $quantity
+                'price' => isset($product->discount) ? $price - $product->discount->price_off : $price,
+                'total' => isset($product->discount) ? ($price - $product->discount->price_off) * $quantity : $price * $quantity
             ];
 
             Session::put('cart', $cart);
-            $my_cart = Session::get('cart');
-            dump($my_cart);
         }
 
-        // return redirect()->back();
+        return redirect()->back();
+    }
+
+    public function showCartPage()
+    {
+        $userId = 1;
+        $cartProducts = Cart::where('customer_id', $userId)->get();
+        $sessionCart = Session::get('cart');
+        return view('layouts.frontend-user-side.cart', [
+            'cartProducts' => $cartProducts,
+            'sessionCart' => $sessionCart
+        ]);
+    }
+
+    public function updateCartPage(Request $request)
+    {
+        $customerId = 1;
+        $quantities = $request->input('quantities');
+
+        foreach ($quantities as $productId => $quantity) {
+            $product = Product::find($productId);
+            $price = optional($product->discount)->price_off ? $product->price - $product->discount->price_off : $product->price;
+            if (1 != 1) {/* Auth::check() */
+                $cartItem = Cart::where('customer_id', $customerId)
+                    ->where('product_id', $productId)
+                    ->first();
+
+                if ($cartItem) {
+                    
+                    $cartItem->update([
+                        'quantity' => $quantity,
+                        'total' => $price * $quantity
+                    ]);
+                }
+            } else {
+                $cart = Session::get('cart');
+
+                if (isset($cart[$product->id])) {
+                    // sessionCart update
+                    $cart[$product->id]['quantity'] = $quantity;
+                    $cart[$product->id]['price'] = $price;
+                    $cart[$product->id]['total'] = $price * $quantity;
+
+                    Session::put('cart', $cart);
+                }
+            }
+        }
+        return redirect()->back();
     }
 }
