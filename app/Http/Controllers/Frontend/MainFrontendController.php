@@ -131,7 +131,7 @@ class MainFrontendController extends Controller
         $quantity = $request->input('quantity');
         $product = Product::findOrFail($id);
 
-        if (1 != 1) { /* Auth::check() */
+        if (1 == 1) { /* Auth::check() */
 
             $cartItem = Cart::where('customer_id', 1)
                 ->where('product_id', $id)
@@ -167,8 +167,11 @@ class MainFrontendController extends Controller
     {
         $userId = 1;
         $cartProducts = Cart::where('customer_id', $userId)->get();
+        $totalCheck = $cartProducts->sum('total');
         $sessionCart = Session::get('cart');
+
         return view('layouts.frontend-user-side.cart', [
+            'totalCheck' => $totalCheck,
             'cartProducts' => $cartProducts,
             'sessionCart' => $sessionCart
         ]);
@@ -179,34 +182,56 @@ class MainFrontendController extends Controller
         $customerId = 1;
         $quantities = $request->input('quantities');
 
-        foreach ($quantities as $productId => $quantity) {
-            $product = Product::find($productId);
-            $price = optional($product->discount)->price_off ? $product->price - $product->discount->price_off : $product->price;
-            if (1 != 1) {/* Auth::check() */
-                $cartItem = Cart::where('customer_id', $customerId)
-                    ->where('product_id', $productId)
-                    ->first();
+        if ($quantities) {
+            foreach ($quantities as $productId => $quantity) {
+                $product = Product::find($productId);
+                $price = optional($product->discount)->price_off ? $product->price - $product->discount->price_off : $product->price;
+                if (1 == 1) {/* Auth::check() */
+                    $cartItem = Cart::where('customer_id', $customerId)
+                        ->where('product_id', $productId)
+                        ->first();
 
-                if ($cartItem) {
-                    
-                    $cartItem->update([
-                        'quantity' => $quantity,
-                        'total' => $price * $quantity
-                    ]);
-                }
-            } else {
-                $cart = Session::get('cart');
+                    if ($cartItem) {
 
-                if (isset($cart[$product->id])) {
-                    // sessionCart update
-                    $cart[$product->id]['quantity'] = $quantity;
-                    $cart[$product->id]['price'] = $price;
-                    $cart[$product->id]['total'] = $price * $quantity;
+                        $cartItem->update([
+                            'quantity' => $quantity,
+                            'total' => $price * $quantity
+                        ]);
+                    }
+                } else {
+                    $cart = Session::get('cart');
 
-                    Session::put('cart', $cart);
+                    if (isset($cart[$product->id])) {
+                        // sessionCart update
+                        $cart[$product->id]['quantity'] = $quantity;
+                        $cart[$product->id]['price'] = $price;
+                        $cart[$product->id]['total'] = $price * $quantity;
+
+                        Session::put('cart', $cart);
+                    }
                 }
             }
         }
         return redirect()->back();
+    }
+
+    public function clearCart()
+    {
+        $customerId = 1;
+        if (1 == 1)/* Auth::check() */ {
+            Cart::where('customer_id', $customerId)->delete();
+        } else {
+            if (Session::has('cart')) {
+                Session::forget('cart');
+            }
+        }
+        return redirect()->back();
+    }
+
+
+    public function proceedToCheckout(Request $request)
+    {
+        $selectedOption = $request->input('customRadio');
+        dd($selectedOption);
     }
 }

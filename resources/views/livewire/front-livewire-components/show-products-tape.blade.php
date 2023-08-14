@@ -1,5 +1,5 @@
 <div class="col-12 col-md-8 col-lg-9">
-    <div class="shop_grid_product_area">
+    <div id="search" class="shop_grid_product_area">
         <div class="row">
             @if ($products)
                 @foreach ($products as $product)

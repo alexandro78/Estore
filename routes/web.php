@@ -85,6 +85,8 @@ Route::post('/cart-add-from-single-product-page/{id}/{price}', [MainFrontendCont
 ////////////////////////////////**** blade template routes ****////////////////////////////////////////////
 Route::get('/cart', [MainFrontendController::class, 'showCartPage'])->name('cart');
 Route::post('/update-cart', [MainFrontendController::class, 'updateCartPage'])->name('update.cart');
+Route::get('/clear-cart', [MainFrontendController::class, 'clearCart'])->name('clear.cart');
+Route::post('/checkout', [MainFrontendController::class, 'proceedToCheckout'])->name('checkout');
 
 
 
