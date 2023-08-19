@@ -107,6 +107,10 @@ class MainFrontendController extends Controller
 
     public function getProductBySize($id, $productSizeId)
     {
+        $cartItem = Cart::where('customer_id', 1)
+            ->where('product_id', $id)
+            ->first();
+
         $product = Product::find($id);
         $sizes = $product->sizes;
         $sizeEntry = Size::find($productSizeId);
@@ -122,7 +126,8 @@ class MainFrontendController extends Controller
             'product' => $product,
             'sizes' => $sizes,
             'productSizeId' => $productSizeId,
-            'sizeDetail' => $sizeDetail
+            'sizeDetail' => $sizeDetail,
+            'cartItem' => $cartItem
         ]);
     }
 
@@ -231,7 +236,57 @@ class MainFrontendController extends Controller
 
     public function proceedToCheckout(Request $request)
     {
-        $selectedOption = $request->input('customRadio');
-        dd($selectedOption);
+        $customerId = 1;
+        $request->validate([
+            'radio-input' => 'required'
+        ]);
+        $selectedShippingMethod = $request->input('radio-input');
+        Session::put('selectedShippingMethod', $selectedShippingMethod);
+
+        if (1 == 1)/* Auth::check() */ {
+            $cartItems = Cart::where('customer_id', $customerId)
+                ->with('product')
+                ->get();
+
+            $billSum = $cartItems->sum('total');
+        } else {
+            $cart = Session::get('cart');
+        }
+
+        return view('layouts.frontend-user-side.checkout', [
+            'billSum' => $billSum,
+            'selectedShippingMethod' => $selectedShippingMethod,
+            'cartItems' => $cartItems
+        ]);
+    }
+
+    public function saveNewOrder(Request $request)
+    {
+        $selectedShippingMethod = Session::get('selectedShippingMethod');
+
+        $firstName = $request->input('first_name');
+        $lastName = $request->input('last_name');
+        $company = $request->input('company');
+        $country = $request->input('country');
+        $deliveryPoint = $request->input('delivery_point');
+        $streetAddress = $request->input('street_address');
+        $postcode = $request->input('postcode');
+        $city = $request->input('city');
+        $phoneNumber = $request->input('phone_number');
+        $emailAddress = $request->input('email_address');
+        $customCheck1 = $request->input("terms_of_agreement");
+        $customCheck2 = $request->input("create_account");
+
+        $customerId = 1;
+        $cartItems = Cart::where('customer_id', $customerId)
+            ->with('product')
+            ->get();
+        $billSum = $cartItems->sum('total');
+
+        return view('layouts.frontend-user-side.saved-order', [
+            'cartItems' => $cartItems,
+            'selectedShippingMethod' => $selectedShippingMethod,
+            'billSum' => $billSum,
+        ]);
     }
 }

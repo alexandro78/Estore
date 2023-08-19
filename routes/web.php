@@ -87,6 +87,9 @@ Route::get('/cart', [MainFrontendController::class, 'showCartPage'])->name('cart
 Route::post('/update-cart', [MainFrontendController::class, 'updateCartPage'])->name('update.cart');
 Route::get('/clear-cart', [MainFrontendController::class, 'clearCart'])->name('clear.cart');
 Route::post('/checkout', [MainFrontendController::class, 'proceedToCheckout'])->name('checkout');
+Route::get('/liq-pay', [MainFrontendController::class, 'getLiqPayPage'])->name('liq.pay');
+Route::post('/save-new-order', [MainFrontendController::class, 'saveNewOrder'])->name('save.new.order');
+Route::post('/saved-order', [MainFrontendController::class, 'savedNewOrder'])->name('saved.order');
 
 
 

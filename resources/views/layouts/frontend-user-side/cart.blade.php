@@ -121,26 +121,25 @@
                                 <h5>Shipping method</h5>
                                 <p>Select the one you want</p>
                             </div>
-
+                            @if ($errors->any())
+                                <div id="chipping-error" class="alert alert-danger">
+                                    <ul>
+                                        <li>{{ 'Оберіть службу доставки!' }}</li>
+                                    </ul>
+                                </div>
+                            @endif
                             <div class="custom-control custom-radio mb-30">
-                                <input type="radio" id="customRadio1" name="customRadio" value="1"
+                                <input type="radio" id="customRadio1" name="radio-input" value="1"
                                     class="custom-control-input">
                                 <label class="custom-control-label d-flex align-items-center justify-content-between"
                                     for="customRadio1"><span>Нова пошта</span>{{-- <span>1-5 днів (в середньому) </span> --}}</label>
                             </div>
 
                             <div class="custom-control custom-radio mb-30">
-                                <input type="radio" id="customRadio2" name="customRadio" value="2"
+                                <input type="radio" id="customRadio2" name="radio-input" value="2"
                                     class="custom-control-input">
                                 <label class="custom-control-label d-flex align-items-center justify-content-between"
                                     for="customRadio2"><span>УкрПошта</span>{{-- <span>3-14 днів </span> --}}</label>
-                            </div>
-
-                            <div class="custom-control custom-radio">
-                                <input type="radio" id="customRadio3" name="customRadio" value="3"
-                                    class="custom-control-input">
-                                <label class="custom-control-label d-flex align-items-center justify-content-between"
-                                    for="customRadio3"><span>Свій варіант</span>{{-- <span>Free</span> --}}</label>
                             </div>
                         </div>
                     </form>

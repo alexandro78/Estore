@@ -100,17 +100,19 @@
                             <h6 class="widget-title">Size</h6>
                             <div class="widget-desc">
                                 <ul>
-                                    @foreach ($sizes as $size)
-                                        @if (isset($productSizeId))
-                                            <li class="{{ $productSizeId == $size->id ? 'li-size-elem' : '' }}"><a
-                                                    href="{{ route('get.product.by.size', ['id' => $product->id, 'productSizeId' => $size->id]) }}#size-section">{{ $size->size }}</a>
-                                            </li>
-                                        @else
-                                            <li><a
-                                                    href="{{ route('get.product.by.size', ['id' => $product->id, 'productSizeId' => $size->id]) }}#size-section">{{ $size->size }}</a>
-                                            </li>
-                                        @endif
-                                    @endforeach
+                                    @if ($sizes)
+                                        @foreach ($sizes as $size)
+                                            @if (isset($productSizeId))
+                                                <li class="{{ $productSizeId == $size->id ? 'li-size-elem' : '' }}"><a
+                                                        href="{{ route('get.product.by.size', ['id' => $product->id, 'productSizeId' => $size->id]) }}#size-section">{{ $size->size }}</a>
+                                                </li>
+                                            @else
+                                                <li><a
+                                                        href="{{ route('get.product.by.size', ['id' => $product->id, 'productSizeId' => $size->id]) }}#size-section">{{ $size->size }}</a>
+                                                </li>
+                                            @endif
+                                        @endforeach
+                                    @endif
                                 </ul>
                             </div>
                         </div>
@@ -129,7 +131,7 @@
                                     onclick="var effect = document.getElementById('qty'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i
                                         class="fa fa-plus" aria-hidden="true"></i></span>
                             </div>
-                            
+
                             @if (1 == 1)
                                 {{-- auth()->check() --}}
                                 @if ($cartItem)
