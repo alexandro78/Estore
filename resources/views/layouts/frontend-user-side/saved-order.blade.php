@@ -21,23 +21,23 @@
                                     <input type="text" class="form-control" id="first_name" value="№ замовлення:" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <input type="text" class="form-control" id="last_name" value="37877329" readonly>
+                                    <input type="text" class="form-control" id="last_name" value="{{$orderNumber}}" readonly>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <input type="text" class="form-control" id="first_name" value="Дата:" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <input type="text" class="form-control" id="last_name" value="19.08.2023" readonly>
+                                    <input type="text" class="form-control" id="last_name" value="{{$orderDate}}" readonly>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <input type="text" class="form-control" id="first_name" value="Час:" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <input type="text" class="form-control" id="last_name" value="11:45"readonly>
+                                    <input type="text" class="form-control" id="last_name" value="{{$ordertTime}}"readonly>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="city">Місто доставки</label>
-                                    <input type="text" class="form-control" id="city" value="Дніпро" readonly>
+                                    <input type="text" class="form-control" id="city" value="{{$city}}" readonly>
                                 </div>
 
                                 <div class="col-12 mb-3">
@@ -83,7 +83,7 @@
                                 <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne"
                                     data-parent="#accordion">
                                     <div class="card-body">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                                        <p>{{$selectedShippingMethod == 1 ? "Нова Пошта" : "УкрПошта"}}</p>
                                     </div>
                                 </div>
                             </div>
@@ -98,7 +98,7 @@
                                 <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo"
                                     data-parent="#accordion">
                                     <div class="card-body">
-                                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit.</p>
+                                        <p>{{$selectedPaymentMethod}}</p>
                                     </div>
                                 </div>
                             </div>

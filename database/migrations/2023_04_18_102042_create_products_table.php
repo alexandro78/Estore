@@ -31,8 +31,8 @@ return new class extends Migration
             $table->boolean('bestseller')->default(false);
             $table->boolean('offer_area')->default(false);
             $table->timestamps();
-            
-            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete()->cascadeOnUpdate(); 
+            $table->text('notes')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete()->cascadeOnUpdate();
             $table->foreignId('size_id')->nullable()->constrained('sizes')->nullOnDelete()->cascadeOnUpdate();
             $table->foreignId('discount_id')->nullable()->constrained('discounts')->nullOnDelete()->cascadeOnUpdate(); /* references('id')->on('discounts'); */
             $table->foreignId('free_shipping_id')->nullable()->constrained('free_shippings')->nullOnDelete()->cascadeOnUpdate();

@@ -12,7 +12,9 @@ use App\Models\Product;
 use App\Models\Filter;
 use App\Models\SizeDetail;
 use App\Models\Size;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
+
 
 class MainFrontendController extends Controller
 {
@@ -263,6 +265,7 @@ class MainFrontendController extends Controller
     public function saveNewOrder(Request $request)
     {
         $selectedShippingMethod = Session::get('selectedShippingMethod');
+        $selectedPaymentMethod = $request->input('payment_method');
 
         $firstName = $request->input('first_name');
         $lastName = $request->input('last_name');
@@ -277,16 +280,63 @@ class MainFrontendController extends Controller
         $customCheck1 = $request->input("terms_of_agreement");
         $customCheck2 = $request->input("create_account");
 
+        $cartId = 1;
         $customerId = 1;
         $cartItems = Cart::where('customer_id', $customerId)
             ->with('product')
             ->get();
         $billSum = $cartItems->sum('total');
 
+        date_default_timezone_set('Europe/Kiev');
+        $orderDate = date('d.m.Y');
+        $ordertTime = date('H:i');
+        $orderNumber = mt_rand(1000, 9999) . date('is');
+        // while (Order::where('order_number', $orderNumber)->exists()) {
+        //     $orderNumber = mt_rand(1000, 9999) . date('is');
+        // }
+
+        $order = new Order();
+        $order->order_date = $orderDate;
+        $order->order_number = $orderNumber;
+        // $order->product_code = $productCode; 
+        $order->delivery_service = $selectedShippingMethod;
+        $order->street_delivery_point = $deliveryPoint;
+        $order->payment_method = $selectedPaymentMethod;
+        $order->payment_status = 'pending';
+        $order->total = $billSum;
+        $order->shipping_address = $streetAddress;
+        $order->shipping_status = 'pending';
+        $order->first_name = $firstName;
+        $order->last_name = $lastName;
+        $order->phone_number = $phoneNumber;
+        $order->company = $company;
+        $order->country = $country;
+        $order->street_address = $streetAddress;
+        $order->postcode = $postcode;
+        $order->city = $city;
+        $order->email_address = $emailAddress;
+        $order->status = 'pending';
+        $order->notes = null;
+
+        $order->customer_id = $customerId;
+        $order->cart_id = $cartId;
+
+        try {
+            $order->save();
+        } catch (\Exception $e) {
+            // Обработка ошибок при сохранении
+            // Например, можно вернуть сообщение об ошибке или перенаправить пользователя обратно с формой
+        }
+
         return view('layouts.frontend-user-side.saved-order', [
             'cartItems' => $cartItems,
             'selectedShippingMethod' => $selectedShippingMethod,
             'billSum' => $billSum,
+            'selectedPaymentMethod' => $selectedPaymentMethod,
+            'city' => $city,
+            'orderNumber' => $orderNumber,
+            'orderDate' => $orderDate,
+            'ordertTime' => $ordertTime
         ]);
     }
 }

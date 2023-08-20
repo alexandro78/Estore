@@ -100,7 +100,7 @@
                                     </div> --}}
                                 </div>
                             </div>
-                        </form>
+                        
                     </div>
                 </div>
 
@@ -134,43 +134,39 @@
                                     <h5>Метод оплати та доставки</h5>
                                     <p>оберіть варіант</p>
                                 </div>
-                                @if ($errors->any())
-                                    <div id="chipping-error" class="alert alert-danger">
-                                        <ul>
-                                            <li>{{ 'Оберіть службу доставки!' }}</li>
-                                        </ul>
-                                    </div>
-                                @endif
+                              
                                 <div class="custom-control custom-radio mb-30">
-                                    <input type="radio" id="customRadio1" name="payment_method" value="1"
+                                    <input type="radio" id="customRadio1" name="payment_method" value="Передплата"
                                         class="custom-control-input">
                                     <label class="custom-control-label d-flex align-items-center justify-content-between"
                                         for="customRadio1"><span>Передплата</span>{{-- <span>1-5 днів (в середньому) </span> --}}</label>
                                 </div>
 
                                 <div class="custom-control custom-radio mb-30">
-                                    <input type="radio" id="customRadio2" name="payment_method" value="2"
+                                    <input type="radio" id="customRadio2" name="payment_method" value="Наложений платіж"
                                         class="custom-control-input">
                                     <label class="custom-control-label d-flex align-items-center justify-content-between"
                                         for="customRadio2"><span>Наложений платіж</span>{{-- <span>3-14 днів </span> --}}</label>
                                 </div>
                                 <div class="custom-control custom-radio mb-30">
-                                    <input type="radio" id="customRadio2" name="payment_method" value="2"
+                                    <input type="radio" id="customRadio3" name="payment_method" value="Передплата, кур'єрська
+                                    доставка"
                                         class="custom-control-input">
                                     <label class="custom-control-label d-flex align-items-center justify-content-between"
-                                        for="customRadio2"><span>Передплата, кур'єрська
+                                        for="customRadio3"><span>Передплата, кур'єрська
                                             доставка</span>{{-- <span>3-14 днів </span> --}}</label>
                                 </div>
                                 <div class="custom-control custom-radio mb-30">
-                                    <input type="radio" id="customRadio2" name="payment_method" value="2"
+                                    <input type="radio" id="customRadio4" name="payment_method" value="Наложений платіж, кур'єрська
+                                    доставка"
                                         class="custom-control-input">
                                     <label class="custom-control-label d-flex align-items-center justify-content-between"
-                                        for="customRadio2"><span>Наложений платіж, кур'єрська
+                                        for="customRadio4"><span>Наложений платіж, кур'єрська
                                             доставка</span>{{-- <span>3-14 днів </span> --}}</label>
                                 </div>
                             </div>
                         </div>
-
+                    </form>
                         <a href="#" class="btn karl-checkout-btn" id="submit-order-btn">Відправити замовлення</a>
                     </div>
                 </div>
