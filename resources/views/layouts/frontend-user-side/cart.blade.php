@@ -18,37 +18,43 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (1 == 1)
-                                        {{-- auth()->check() --}}
-                                        @foreach ($cartProducts as $cartProduct)
-                                            <tr>
-                                                <td class="cart_product_img d-flex align-items-center">
-                                                    <a href="#"><img src="img/product-img/product-9.jpg"
-                                                            alt="Product"></a>
+                                   {{-- //FIXME: місце виводу продуктів в кошику --}}
 
-                                                    <h6>{{ $cartProduct->product->name }}</h6>
-                                                </td>
-                                                <td class="price">
-                                                    <span>{{ optional($cartProduct->product->discount)->price_off ? $cartProduct->product->price - $cartProduct->product->discount->price_off : $cartProduct->product->price }}$</span>
-                                                </td>
-                                                <td class="qty">
-                                                    <div class="quantity">
-                                                        <span class="qty-minus"
-                                                            onclick="var effect = document.getElementById('{{ 'qty' . $cartProduct->id }}'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i
-                                                                class="fa fa-minus" aria-hidden="true"></i></span>
-                                                        <input type="number" class="qty-text"
-                                                            id="{{ 'qty' . $cartProduct->id }}" step="1"
-                                                            min="1" max="99"
-                                                            name="quantities[{{ $cartProduct->product->id }}]"
-                                                            value="{{ $cartProduct->quantity }}">
-                                                        <span class="qty-plus"
-                                                            onclick="var effect = document.getElementById('{{ 'qty' . $cartProduct->id }}'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i
-                                                                class="fa fa-plus" aria-hidden="true"></i></span>
-                                                    </div>
-                                                </td>
-                                                <td class="total_price"><span>{{ $cartProduct->total }}$</span></td>
-                                            </tr>
-                                        @endforeach
+                                    @if (1 != 1)
+                                        {{-- auth()->check() --}}
+                                        @if ($productsInCart)
+                                            @foreach ($productsInCart as $productInCart)
+                                                <tr>
+                                                    <td class="cart_product_img d-flex align-items-center">
+                                                        <a href="#"><img src="img/product-img/product-9.jpg"
+                                                                alt="Product"></a>
+
+                                                        <h6>{{ $productInCart->name }}</h6>
+                                                    </td>
+                                                    <td class="price">
+                                                        <span>{{ $productInCart->discount_id ? $productInCart->price - $productInCart->discount->price_off : $productInCart->price }}$</span>
+                                                    </td>
+                                                    <td class="qty">
+                                                        <div class="quantity">
+                                                            <span class="qty-minus"
+                                                                onclick="var effect = document.getElementById('{{ 'qty' . $productInCart->id }}'); var qty = effect.value; if( !isNaN( qty ) &amp;&amp; qty &gt; 1 ) effect.value--;return false;"><i
+                                                                    class="fa fa-minus" aria-hidden="true"></i></span>
+                                                            <input type="number" class="qty-text"
+                                                                id="{{ 'qty' . $productInCart->id }}" step="1"
+                                                                min="1" max="99"
+                                                                name="quantities[{{ $productInCart->id }}]"
+                                                                value="{{ $productInCart->pivot->quantity }}">
+                                                            <span class="qty-plus"
+                                                                onclick="var effect = document.getElementById('{{ 'qty' . $productInCart->id }}'); var qty = effect.value; if( !isNaN( qty )) effect.value++;return false;"><i
+                                                                    class="fa fa-plus" aria-hidden="true"></i></span>
+                                                        </div>
+                                                    </td>
+                                                    <td class="total_price">
+                                                        <span>{{ $productInCart->discount_id ? ($productInCart->price - $productInCart->discount->price_off) * $productInCart->pivot->quantity : $productInCart->price * $productInCart->pivot->quantity }}</span>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @endif
                                     @else
                                         @if (isset($sessionCart))
                                             @foreach ($sessionCart as $productId => $productInfo)
@@ -155,7 +161,9 @@
                         <ul class="cart-total-chart">
                             {{-- <li><span>Subtotal</span> <span>$59.90</span></li>
                             <li><span>Shipping</span> <span>Free</span></li> --}}
-                            <li><span><strong>Total</strong></span> <span><strong>{{ $totalCheck }}$</strong></span></li>
+                            <li><span><strong>Total</strong></span>
+                                <span><strong>{{ $allProductPriseTotal }}$</strong></span>
+                            </li>
                         </ul>
                         <a id="proceed-to-checkout" href="checkout.html" class="btn karl-checkout-btn">Proceed to
                             checkout</a>

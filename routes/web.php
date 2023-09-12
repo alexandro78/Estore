@@ -83,24 +83,16 @@ Route::get('/product-size/{id}/{productSizeId}', [MainFrontendController::class,
 Route::post('/cart-add-from-single-product-page/{id}/{price}', [MainFrontendController::class, 'addToCartFromSingleProductPage'])->name('cart.add.from.single.product.page');
 
 ////////////////////////////////**** blade template routes ****////////////////////////////////////////////
+///////////////////////////////// frontend //////////////////////////////////////////////////////////////
+Route::get('/category/{id}', [MainFrontendController::class, 'createCategorySession'])->name('filter.by.category');
 Route::get('/cart', [MainFrontendController::class, 'showCartPage'])->name('cart');
 Route::post('/update-cart', [MainFrontendController::class, 'updateCartPage'])->name('update.cart');
 Route::get('/clear-cart', [MainFrontendController::class, 'clearCart'])->name('clear.cart');
 Route::post('/checkout', [MainFrontendController::class, 'proceedToCheckout'])->name('checkout');
-Route::get('/liq-pay', [MainFrontendController::class, 'getLiqPayPage'])->name('liq.pay');
 Route::post('/save-new-order', [MainFrontendController::class, 'saveNewOrder'])->name('save.new.order');
 Route::post('/saved-order', [MainFrontendController::class, 'savedNewOrder'])->name('saved.order');
 
 
-
-
-Route::get('/', function () {
-    return view('common-test');
-});
-
-Route::get('/hh', function () {
-    return view('child-test1');
-});
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 // Route::get('/dashboard', function () {

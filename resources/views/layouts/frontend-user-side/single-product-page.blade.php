@@ -132,22 +132,23 @@
                                         class="fa fa-plus" aria-hidden="true"></i></span>
                             </div>
 
-                            @if (1 == 1)
+                            {{-- //FIXME: Місце додавання товару в кошик або сесійний кошик зі сторінки окремого товару. --}}
+                            @if (1 != 1)
                                 {{-- auth()->check() --}}
                                 @if ($cartItem)
-                                    <button style="background-color: green;" type="submit" name="addtocart"
-                                        value="5" class="btn cart-submit d-block">ADDED3</button>
-                                @else
-                                    <button type="submit" name="addtocart" value="5"
-                                        class="btn cart-submit d-block">ADD TO CART 111</button>
-                                @endif
-                            @else
-                                @if ($sessionCart)
                                     <button style="background-color: green;" type="submit" name="addtocart"
                                         value="5" class="btn cart-submit d-block">ADDED</button>
                                 @else
                                     <button type="submit" name="addtocart" value="5"
-                                        class="btn cart-submit d-block">ADD TO CART 222</button>
+                                        class="btn cart-submit d-block">ADD TO CART</button>
+                                @endif
+                            @else
+                                @if ($sessionCart)
+                                    <button style="background-color: green;" type="submit" name="addtocart"
+                                        value="5" class="btn cart-submit d-block">ADDED555</button>
+                                @else
+                                    <button type="submit" name="addtocart" value="5"
+                                        class="btn cart-submit d-block">ADD TO CART555</button>
                                 @endif
                             @endif
                         </form>

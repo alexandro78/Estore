@@ -69,17 +69,17 @@
                     <x-adminlte-select fgroup-class="col-md-12" type="text" name="color_code" label="Колір фільтрації"
                         title="Базовий колір фільтрації">
                         <option value="default" selected>-----</option>
-                        <option value="#d7d7d7">Сірий</option>
+                        <option value="gray">Сірий</option>
                         <option value="red">Червоний</option>
-                        <option value="#fcf29c">Жовтий</option>
-                        <option value="#8fc99c">Зелений</option>
+                        <option value="yellow">Жовтий</option>
+                        <option value="green">Зелений</option>
                         <option value="white">Білий</option>
-                        <option value="#bc83b1">Бірюзовий</option>
-                        <option value="#9ee7f4">Світло блакитний</option>
+                        <option value="teal">Бірюзовий</option>
+                        <option value="cyan">Світло блакитний</option>
                         <option value="blue">Синій</option>
                         <option value="purple">Фіолетовий</option>
                         <option value="pink">Розовий</option>
-                        <option value="#914900">Коричневий</option>
+                        <option value="brown">Коричневий</option>
                         <option value="black">Чорний</option>
                         <option value="beige">Бежевий</option>
                         <option value="orange">Помаранчовий</option>

@@ -28,4 +28,14 @@ class Customer extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    public function newOrders()
+    {
+        return $this->hasMany(NewOrder::class);
+    }
+
+    public function orderArchives()
+    {
+        return $this->hasMany(OrderArchive::class);
+    }
 }

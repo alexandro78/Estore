@@ -42,6 +42,7 @@ class Product extends Model
         return $this->belongsTo(FreeShipping::class);
     }
 
+    //many to many relationship between Product and Size
     public function sizes()
     {
         return $this->belongsToMany(Size::class);
@@ -76,5 +77,17 @@ class Product extends Model
     public function relatedCarts()
     {
         return $this->belongsToMany(Cart::class);
+    }
+
+    //many to many relationship between Product and Color
+    public function colors()
+    {
+        return $this->belongsToMany(Color::class); // 'color_product' - им'я pivot таблиці можна передати другим аргументом якщо им'я pivot таблиці не збігається з дефолтним
+    }
+
+    // many to many relationships between products and categories
+    public function categoryBelongsToProducts()
+    {
+        return $this->belongsToMany(Category::class);
     }
 }

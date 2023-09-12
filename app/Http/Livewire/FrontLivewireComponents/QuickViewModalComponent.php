@@ -20,19 +20,23 @@ class QuickViewModalComponent extends Component
 
     public function getDataFromShowProducts($productId)
     {
-        $cart = Session::get('cart');
-        if (isset($cart) && isset($cart[$productId])) {
-            $this->sessionCartItem = true;
-        } else {
-            $this->sessionCartItem = false;
-        }
-
         $this->productId = $productId;
         $this->product = Product::find($productId);
 
-        $this->checkIfItemAdded = Cart::where('customer_id', 1)
-            ->where('product_id', $productId)
-            ->first();
+        if (1 == 1) {  // auth()->check()
+            $customerId = 1;
+            $cart = Cart::where('customer_id', $customerId)->first();
+            if ($cart) {
+                $this->checkIfItemAdded = $cart->relatedProducts->contains($productId);
+            }
+        } else {
+            $cart = Session::get('cart');
+            if (isset($cart) && isset($cart[$productId])) {
+                $this->sessionCartItem = true;
+            } else {
+                $this->sessionCartItem = false;
+            }
+        }
     }
 
     public function addToCardFromModal(Request $request)
@@ -42,20 +46,17 @@ class QuickViewModalComponent extends Component
         $productId = $data['productId'];
         $product = Product::findOrFail($productId);
 
-
-        if (1 != 1) {
-
-            $cartItem = Cart::where('customer_id', 1)
-                ->where('product_id', $productId)
-                ->first();
-
-            if (!$cartItem) {
-                $customerId = 1;
+        //FIXME: Місце додавання товару в кошик або сесійний кошик з модального вікна товару.
+        if (1 != 1) { // auth()->check()
+            $customerId = 1;
+            $cart = Cart::where('customer_id', $customerId)->first();
+            if (!$cart) {
                 $cart = new Cart();
-                $cart->quantity = $quantity;
-                $cart->total = isset($product->discount) ? ($product->price - $product->discount->price_off) * $quantity : $product->price * $quantity;
                 $cart->customer_id = $customerId;
-                $cart->product_id = $productId;
+                $cart->save();
+            }
+            if (!$cart->relatedProducts->contains($productId)) {
+                $cart->relatedProducts()->attach($productId, ['quantity' => $quantity, 'total' => isset($product->discount) ? ($product->price - $product->discount->price_off) * $quantity : $product->price * $quantity]);
                 $cart->save();
             }
         } else {

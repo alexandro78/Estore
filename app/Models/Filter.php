@@ -10,17 +10,16 @@ class Filter extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', // добавляем имя в список fillable свойств
+        'current_filter',
         'min_price',
         'max_price',
         'color_filter',
-        'size_filter'
+        'size_filter',
+        'category_id'
     ];
 
-
-    public function user()
+    public function category()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Category::class, 'category_id');
     }
-
 }

@@ -6,6 +6,7 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     @livewireStyles
     <!-- Title  -->
@@ -27,6 +28,9 @@
     @yield('content')
     @include('layouts.frontend-user-side.footer')
     </div>
+    <script>
+        var csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    </script>
     @livewireScripts
     <!-- /.wrapper end -->
     <!-- jQuery (Necessary for All JavaScript Plugins) -->

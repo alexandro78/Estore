@@ -2152,3 +2152,15 @@ img {
     color: white !important;
     border: 2px solid #ff084e !important;
 }
+
+.active-nav-item {
+    color:#ff084e !important;
+}
+
+.active-inner-nav-item {
+    color:#ff084e !important;
+}
+
+.active-inner-nav-item:hover {
+    color: white !important;
+}

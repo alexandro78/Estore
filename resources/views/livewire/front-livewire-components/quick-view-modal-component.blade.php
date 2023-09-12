@@ -53,9 +53,10 @@
                                                     class="fa fa-plus" aria-hidden="true"></i></span>
                                         </div>
                                         
+                                        {{-- //FIXME: Місце додавання товару в кошик або сесійний кошик з модального вікна товару. --}}
                                         @if (1 != 1)
                                             {{-- auth()->check() --}}
-                                            @if (isset($checkIfItemAdded))
+                                            @if ($checkIfItemAdded)
                                                 <button style="background-color: green; color: white;" type="submit"
                                                     name="addtocart" value="{{ $productId }}"
                                                     class="cart-submit">Added</button>

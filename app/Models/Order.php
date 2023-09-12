@@ -23,4 +23,14 @@ class Order extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
+    public function newOrders()
+    {
+        return $this->hasMany(NewOrder::class);
+    }
+
+    public function orderArchives()
+    {
+        return $this->hasMany(OrderArchive::class);
+    }
 }

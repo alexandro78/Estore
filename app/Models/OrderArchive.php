@@ -5,17 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Cart extends Model
+class OrderArchive extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'product_name',
+        'product_description',
+        'product_size',
+        'product_color',
         'quantity',
+        'price',
         'total',
+        'order_id',
         'customer_id',
-        'product_id',
+        'order_date',
+        'note',
+        'status',
+        'delivery_method',
+        'payment_method',
+        'destination_city',
     ];
-
+    
     public function customer()
     {
         return $this->belongsTo(Customer::class);
@@ -23,12 +34,6 @@ class Cart extends Model
 
     public function order()
     {
-        return $this->hasOne(Order::class);
-    }
-
-    //many to many relationship between Cart and Product
-    public function relatedProducts()
-    {
-        return $this->belongsToMany(Product::class)->withPivot(['quantity', 'total']);
+        return $this->belongsTo(Order::class);
     }
 }

@@ -67,9 +67,9 @@
                                     <input type="text" class="form-control" id="city" name="city">
                                 </div>
                                 <!-- <div class="col-12 mb-3">
-                                                                                <label for="state">Province <span>*</span></label>
-                                                                                <input type="text" class="form-control" id="state" value="">
-                                                                            </div> -->
+                                                                                                <label for="state">Province <span>*</span></label>
+                                                                                                <input type="text" class="form-control" id="state" value="">
+                                                                                            </div> -->
                                 <div class="col-12 mb-3">
                                     <label for="phone_number">Телефон <span>*</span></label>
                                     <input type="number" class="form-control" id="phone_number" name="phone_number"
@@ -100,7 +100,7 @@
                                     </div> --}}
                                 </div>
                             </div>
-                        
+
                     </div>
                 </div>
 
@@ -112,18 +112,29 @@
                             <p>The Details</p>
                         </div>
 
-                       
+
                         <ul class="order-details-form mb-4">
                             <li><span>Товар</span> <span>сума</span></li>
-                            @foreach ($cartItems as $cartItem)
-                                <li><span>{{ $cartItem->product->name }} - ({{ $cartItem->quantity }} шт.)</span>
-                                    <span>{{ $cartItem->product->price }} грн.</span>
-                                </li>
-                            @endforeach
+                            @if ($productsInCart)
+                                @foreach ($productsInCart as $productInCart)
+                                    <li><span> {{ $productInCart->name }} - ({{ $productInCart->pivot->quantity }})
+                                            шт.</span>
+                                        <span>{{ $productInCart->discount_id ? ($productInCart->price - $productInCart->discount->price_off) * $productInCart->pivot->quantity : $productInCart->price * $productInCart->pivot->quantity }}
+                                            грн.</span>
+                                    </li>
+                                @endforeach
+                            @else
+                                @foreach ($sessionCart as $productData)
+                                    <li><span>{{ $productData['productName'] }} - ({{ $productData['quantity'] }}) шт.
+                                        </span>
+                                        <span>{{ $productData['price'] }} грн.</span>
+                                    </li>
+                                @endforeach
+                            @endif
                             <li><span>Доставка</span>
                                 <span>{{ $selectedShippingMethod == 1 ? 'Нова пошта' : 'УкрПошта' }}</span>
                             </li>
-                            <li><span>Всього</span> <span>{{ $billSum }} грн.</span></li>
+                            <li><span>Всього</span> <span>{{ $allProductPriseTotal }} грн.</span></li>
                         </ul>
 
 
@@ -134,7 +145,7 @@
                                     <h5>Метод оплати та доставки</h5>
                                     <p>оберіть варіант</p>
                                 </div>
-                              
+
                                 <div class="custom-control custom-radio mb-30">
                                     <input type="radio" id="customRadio1" name="payment_method" value="Передплата"
                                         class="custom-control-input">
@@ -143,13 +154,14 @@
                                 </div>
 
                                 <div class="custom-control custom-radio mb-30">
-                                    <input type="radio" id="customRadio2" name="payment_method" value="Наложений платіж"
-                                        class="custom-control-input">
+                                    <input type="radio" id="customRadio2" name="payment_method"
+                                        value="Наложений платіж" class="custom-control-input">
                                     <label class="custom-control-label d-flex align-items-center justify-content-between"
                                         for="customRadio2"><span>Наложений платіж</span>{{-- <span>3-14 днів </span> --}}</label>
                                 </div>
                                 <div class="custom-control custom-radio mb-30">
-                                    <input type="radio" id="customRadio3" name="payment_method" value="Передплата, кур'єрська
+                                    <input type="radio" id="customRadio3" name="payment_method"
+                                        value="Передплата, кур'єрська
                                     доставка"
                                         class="custom-control-input">
                                     <label class="custom-control-label d-flex align-items-center justify-content-between"
@@ -157,7 +169,8 @@
                                             доставка</span>{{-- <span>3-14 днів </span> --}}</label>
                                 </div>
                                 <div class="custom-control custom-radio mb-30">
-                                    <input type="radio" id="customRadio4" name="payment_method" value="Наложений платіж, кур'єрська
+                                    <input type="radio" id="customRadio4" name="payment_method"
+                                        value="Наложений платіж, кур'єрська
                                     доставка"
                                         class="custom-control-input">
                                     <label class="custom-control-label d-flex align-items-center justify-content-between"
@@ -166,7 +179,7 @@
                                 </div>
                             </div>
                         </div>
-                    </form>
+                        </form>
                         <a href="#" class="btn karl-checkout-btn" id="submit-order-btn">Відправити замовлення</a>
                     </div>
                 </div>

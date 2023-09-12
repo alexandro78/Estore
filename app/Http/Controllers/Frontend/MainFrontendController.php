@@ -22,15 +22,6 @@ class MainFrontendController extends Controller
     {
         $data = $request->json()->all();
         $product = Product::find($data['productId']);
-
-        //это код стал не нужен потому что js проверяет если текст ADDED то слушатель не срабатывает на клик и 
-        //ajax не отправляет товар в корзину.
-        // $existingCartItem = Cart::where('product_id', $data['productId'])
-        //     ->where('customer_id', 1)
-        //     ->first();
-        // If the product has not been added to the cart yet, add
-        // if (!$existingCartItem) {
-
         $cart = new Cart();
         $cart->product_id = $data['productId'];
         $cart->customer_id = 1;
@@ -54,23 +45,13 @@ class MainFrontendController extends Controller
         $valueMin = $data['value_min'];
         // $valueMax = $data['value_max'];
         return response()->json(['success' => 8888888888]);
-        // Далее вы можете использовать значения $valueMin и $valueMax по вашему усмотрению
+        // Next, you can use the $valueMin and $valueMax values as you see fit
     }
-
-    // public function testFun(Request $request)
-    // {
-
-    //     $data = $request->json()->all();
-
-    //     $valueMin = $data['minValue'];
-    //     // $valueMax = $data['value_max'];
-    //     return response()->json(['success' => $data]);
-    // }
 
     public function showProducts()
     {
-        $userId = 1;
-        $filter = Filter::where('user_id', $userId)->first();
+        $sessionFilterUserId = Session::get('sessionFilterUserId');
+        $filter = Filter::where('current_filter', $sessionFilterUserId)->first();
 
         if ($filter) {
             $filter->delete();
@@ -86,19 +67,24 @@ class MainFrontendController extends Controller
 
     public function showSinglePage($id)
     {
-        $cartItem = Cart::where('customer_id', 1)
-            ->where('product_id', $id)
-            ->first();
-
-        $cart = Session::get('cart');
-        if (isset($cart) && isset($cart[$id])) {
-            $sessionCart = true;
+        $cartItem = false;
+        $sessionCart = false;
+        if (1 == 1) { //auth()->check()
+            $customerId = 1;
+            $cart = Cart::where('customer_id', $customerId)->first();
+            $cartItem = $cart->relatedProducts->find($id);
         } else {
-            $sessionCart = false;
+            $cart = Session::get('cart');
+            if (isset($cart) && isset($cart[$id])) {
+                $sessionCart = true;
+            } else {
+                $sessionCart = false;
+            }
         }
 
         $product = Product::find($id);
         $sizes = $product->sizes;
+
         return view('layouts.frontend-user-side.single-product-page', [
             'product' => $product,
             'sizes' => $sizes,
@@ -109,10 +95,12 @@ class MainFrontendController extends Controller
 
     public function getProductBySize($id, $productSizeId)
     {
-        $cartItem = Cart::where('customer_id', 1)
-            ->where('product_id', $id)
-            ->first();
-
+        $cartItem = false;
+        if (1 == 1) { //auth()->check()
+            $customerId = 1;
+            $cart = Cart::where('customer_id', $customerId)->first();
+            $cartItem = $cart->relatedProducts->find($id);
+        }
         $product = Product::find($id);
         $sizes = $product->sizes;
         $sizeEntry = Size::find($productSizeId);
@@ -124,33 +112,39 @@ class MainFrontendController extends Controller
             })->first();
         }
 
+        $cart = Session::get('cart');
+        if (isset($cart) && isset($cart[$id])) {
+            $sessionCart = true;
+        } else {
+            $sessionCart = false;
+        }
+
         return view('layouts.frontend-user-side.single-product-page', [
             'product' => $product,
             'sizes' => $sizes,
             'productSizeId' => $productSizeId,
             'sizeDetail' => $sizeDetail,
-            'cartItem' => $cartItem
+            'cartItem' => $cartItem,
+            'sessionCart' => $sessionCart
         ]);
     }
 
+    //FIXME: Місце додавання товару в кошик або сесійний кошик зі сторінки окремого товару.
     public function addToCartFromSingleProductPage(Request $request, $id, $price)
     {
         $quantity = $request->input('quantity');
         $product = Product::findOrFail($id);
+        $customerId = 1;
 
-        if (1 == 1) { /* Auth::check() */
-
-            $cartItem = Cart::where('customer_id', 1)
-                ->where('product_id', $id)
-                ->first();
-
-            if (!$cartItem) {
-                $customerId = 1;
+        if (1 != 1) { /* Auth::check() */
+            $cart = Cart::where('customer_id', $customerId)->first();
+            if (!$cart) {
                 $cart = new Cart();
-                $cart->quantity = $quantity;
-                $cart->total = isset($product->discount) ? ($price - $product->discount->price_off) * $quantity : $price * $quantity;
                 $cart->customer_id = $customerId;
-                $cart->product_id = $id;
+                $cart->save();
+            }
+            if (!$cart->relatedProducts->contains($id)) {
+                $cart->relatedProducts()->attach($id, ['quantity' => $quantity, 'total' => isset($product->discount) ? ($product->price - $product->discount->price_off) * $quantity : $product->price * $quantity]);
                 $cart->save();
             }
         } else {
@@ -160,7 +154,7 @@ class MainFrontendController extends Controller
                 'productName' => $product->name,
                 'productDescription' => $product->description,
                 'quantity' => $quantity,
-                'price' => isset($product->discount) ? $price - $product->discount->price_off : $price,
+                'price' => isset($product->discount) ? ($price - $product->discount->price_off) * $quantity : $price * $quantity,
                 'total' => isset($product->discount) ? ($price - $product->discount->price_off) * $quantity : $price * $quantity
             ];
 
@@ -170,16 +164,37 @@ class MainFrontendController extends Controller
         return redirect()->back();
     }
 
+    //FIXME: місце виводу продуктів к корзину
     public function showCartPage()
     {
-        $userId = 1;
-        $cartProducts = Cart::where('customer_id', $userId)->get();
-        $totalCheck = $cartProducts->sum('total');
-        $sessionCart = Session::get('cart');
+        $customerId = 1;
+        $customerCart = Cart::where('customer_id', $customerId)->first();
+        $productsInCart = optional($customerCart)->relatedProducts;
+        $allProductPriseTotal = 0;
+        if ($customerCart) {
+            $productsInCart = $customerCart->relatedProducts;
+
+            foreach ($productsInCart as $product) {
+                $cartItem = $customerCart->relatedProducts->where('id', $product->id)->first();
+                if ($product->discount_id) {
+                    $allProductPriseTotal += $product->price * $cartItem->pivot->quantity;
+                    $allProductPriseTotal -= (optional($product->discount)->price_off * $cartItem->pivot->quantity);
+                } else {
+                    $allProductPriseTotal += $product->price * $cartItem->pivot->quantity;
+                }
+            }
+        }
+        $sessionCart = Session::get('cart', []);
+        if (1 == 1) {
+            foreach ($sessionCart as $item) {
+                $allProductPriseTotal += $item['total'];
+            }
+        }
+
 
         return view('layouts.frontend-user-side.cart', [
-            'totalCheck' => $totalCheck,
-            'cartProducts' => $cartProducts,
+            'allProductPriseTotal' => $allProductPriseTotal,
+            'productsInCart' => $productsInCart,
             'sessionCart' => $sessionCart
         ]);
     }
@@ -188,23 +203,22 @@ class MainFrontendController extends Controller
     {
         $customerId = 1;
         $quantities = $request->input('quantities');
-
         if ($quantities) {
             foreach ($quantities as $productId => $quantity) {
                 $product = Product::find($productId);
-                $price = optional($product->discount)->price_off ? $product->price - $product->discount->price_off : $product->price;
-                if (1 == 1) {/* Auth::check() */
-                    $cartItem = Cart::where('customer_id', $customerId)
-                        ->where('product_id', $productId)
-                        ->first();
 
-                    if ($cartItem) {
+                if ($product) {
+                    $price =  optional($product->discount)->price_off ? $product->price - $product->discount->price_off : $product->price;
+                } else {
+                    $price = 0;
+                }
 
-                        $cartItem->update([
-                            'quantity' => $quantity,
-                            'total' => $price * $quantity
-                        ]);
-                    }
+                if (1 != 1) {/* Auth::check() */
+                    $customerCart = Cart::where('customer_id', $customerId)->first();
+                    $customerCart->relatedProducts()->updateExistingPivot($productId, [
+                        'quantity' => $quantity,
+                        'total' => $price * $quantity,
+                    ]);
                 } else {
                     $cart = Session::get('cart');
 
@@ -226,15 +240,17 @@ class MainFrontendController extends Controller
     {
         $customerId = 1;
         if (1 == 1)/* Auth::check() */ {
-            Cart::where('customer_id', $customerId)->delete();
-        } else {
-            if (Session::has('cart')) {
-                Session::forget('cart');
+            $customerCart = Cart::where('customer_id', $customerId)->first();
+            if ($customerCart) {
+                $customerCart->relatedProducts()->detach();
+                $customerCart->delete();
             }
+        }
+        if (Session::has('cart')) {
+            Session::forget('cart');
         }
         return redirect()->back();
     }
-
 
     public function proceedToCheckout(Request $request)
     {
@@ -245,20 +261,35 @@ class MainFrontendController extends Controller
         $selectedShippingMethod = $request->input('radio-input');
         Session::put('selectedShippingMethod', $selectedShippingMethod);
 
-        if (1 == 1)/* Auth::check() */ {
-            $cartItems = Cart::where('customer_id', $customerId)
-                ->with('product')
-                ->get();
+        $customerId = 1;
+        $allProductPriseTotal = 0;
+        $productsInCart = NULL;
+        if (1 != 1)/* Auth::check() */ {
+            $customerCart = Cart::where('customer_id', $customerId)->first();
+            $productsInCart = $customerCart->relatedProducts;
 
-            $billSum = $cartItems->sum('total');
+            foreach ($productsInCart as $product) {
+                if ($product->discount_id) {
+                    $allProductPriseTotal += $product->price * $product->pivot->quantity;
+                    $allProductPriseTotal -= (optional($product->discount)->price_off * $product->pivot->quantity);
+                } else {
+                    $allProductPriseTotal += $product->price * $product->pivot->quantity;
+                }
+            }
         } else {
-            $cart = Session::get('cart');
+            $sessionCart = Session::get('cart');
+            if (1 == 1) {
+                foreach ($sessionCart as $item) {
+                    $allProductPriseTotal += $item['total'];
+                }
+            }
         }
 
         return view('layouts.frontend-user-side.checkout', [
-            'billSum' => $billSum,
+            'productsInCart' => $productsInCart,
             'selectedShippingMethod' => $selectedShippingMethod,
-            'cartItems' => $cartItems
+            'allProductPriseTotal' => $allProductPriseTotal,
+            'sessionCart' => $sessionCart
         ]);
     }
 
@@ -280,30 +311,38 @@ class MainFrontendController extends Controller
         $customCheck1 = $request->input("terms_of_agreement");
         $customCheck2 = $request->input("create_account");
 
-        $cartId = 1;
-        $customerId = 1;
-        $cartItems = Cart::where('customer_id', $customerId)
-            ->with('product')
-            ->get();
-        $billSum = $cartItems->sum('total');
+        $allProductPriseTotal = 0;
+        if (1 != 1) {
+            $customerId = 1;
+            $customerCart = Cart::where('customer_id', $customerId)->first();
+            $productsInCart = $customerCart->relatedProducts;
+            if ($customerCart) {
+                $productsInCart = $customerCart->relatedProducts;
+
+                foreach ($productsInCart as $product) {
+                    if ($product->discount_id) {
+                        $allProductPriseTotal += $product->price * $product->pivot->quantity;
+                        $allProductPriseTotal -= (optional($product->discount)->price_off * $product->pivot->quantity);
+                    } else {
+                        $allProductPriseTotal += $product->price * $product->pivot->quantity;
+                    }
+                }
+            }
+        }
 
         date_default_timezone_set('Europe/Kiev');
         $orderDate = date('d.m.Y');
         $ordertTime = date('H:i');
         $orderNumber = mt_rand(1000, 9999) . date('is');
-        // while (Order::where('order_number', $orderNumber)->exists()) {
-        //     $orderNumber = mt_rand(1000, 9999) . date('is');
-        // }
 
         $order = new Order();
         $order->order_date = $orderDate;
         $order->order_number = $orderNumber;
-        // $order->product_code = $productCode; 
         $order->delivery_service = $selectedShippingMethod;
         $order->street_delivery_point = $deliveryPoint;
         $order->payment_method = $selectedPaymentMethod;
         $order->payment_status = 'pending';
-        $order->total = $billSum;
+        $order->total = 8888;
         $order->shipping_address = $streetAddress;
         $order->shipping_status = 'pending';
         $order->first_name = $firstName;
@@ -318,25 +357,29 @@ class MainFrontendController extends Controller
         $order->status = 'pending';
         $order->notes = null;
 
-        $order->customer_id = $customerId;
-        $order->cart_id = $cartId;
+        $order->customer_id = 1;
+        $order->cart_id = $customerCart->id; //FIXME: зупинився на цьому місці (потрібно створити корзину для незареестрованних користувачів)
+        $order->save();
+        $customerCart->customer_id = null;
+        $customerCart->save();
 
-        try {
-            $order->save();
-        } catch (\Exception $e) {
-            // Обработка ошибок при сохранении
-            // Например, можно вернуть сообщение об ошибке или перенаправить пользователя обратно с формой
-        }
 
         return view('layouts.frontend-user-side.saved-order', [
-            'cartItems' => $cartItems,
             'selectedShippingMethod' => $selectedShippingMethod,
-            'billSum' => $billSum,
             'selectedPaymentMethod' => $selectedPaymentMethod,
             'city' => $city,
             'orderNumber' => $orderNumber,
             'orderDate' => $orderDate,
-            'ordertTime' => $ordertTime
+            'ordertTime' => $ordertTime,
+            'allProductPriseTotal' => $allProductPriseTotal,
+            'productsInCart' => $productsInCart
         ]);
+    }
+
+
+    public function createCategorySession($id)
+    {
+        session()->put('categorySession', $id);
+        $sessionCategory = session('categorySession');
     }
 }

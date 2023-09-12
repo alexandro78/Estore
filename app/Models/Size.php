@@ -16,7 +16,7 @@ class Size extends Model
         return $this->hasMany(Product::class);
     }
 
-    //many to many relations
+    //many to many relationship between Product and Size
     public function relatedProducts()
     {
         return $this->belongsToMany(Product::class);

@@ -18,4 +18,15 @@ class Category extends Model
     {
         return $this->hasMany(Category::class, 'parent_id');
     }
+
+    public function filter()
+    {
+        return $this->hasOne(Filter::class, 'category_id');
+    }
+
+    // many to many relationships between products and categories
+    public function productBelongsToCategories()
+    {
+        return $this->belongsToMany(Product::class);
+    }
 }

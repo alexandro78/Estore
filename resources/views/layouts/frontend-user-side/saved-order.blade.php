@@ -60,15 +60,15 @@
 
                         <ul class="order-details-form mb-4">
                             <li><span>Товар</span> <span>сума</span></li>
-                            @foreach ($cartItems as $cartItem)
-                                <li><span>{{ $cartItem->product->name }} - ({{ $cartItem->quantity }} шт.)</span>
-                                    <span>{{ $cartItem->product->price }} грн.</span>
+                            @foreach ($productsInCart as $productInCart)
+                                <li><span>{{ $productInCart->name }} - ({{ $productInCart->pivot->quantity }}) шт.</span>
+                                    <span>{{ $productInCart->discount_id ? ($productInCart->price - $productInCart->discount->price_off) * $productInCart->pivot->quantity : $productInCart->price * $productInCart->pivot->quantity }} грн.</span>
                                 </li>
                             @endforeach
                             <li><span>Доставка</span>
                                 <span>{{ $selectedShippingMethod == 1 ? 'Нова пошта' : 'УкрПошта' }}</span>
                             </li>
-                            <li><span>Всього</span> <span>{{ $billSum }} грн.</span></li>
+                            <li><span>Всього</span> <span>{{ $allProductPriseTotal }} грн.</span></li>
                         </ul>
                         <div id="accordion" role="tablist" class="mb-4">
                             <div class="card">

@@ -16,7 +16,7 @@ return new class extends Migration
 
             // Foreign keys
             $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
-            $table->foreignId('size_id')->constrained('sizes')->cascadeOnDelete();
+            $table->foreignId('color_id')->constrained('colors')->cascadeOnDelete();
             $table->timestamps();
         });
     }

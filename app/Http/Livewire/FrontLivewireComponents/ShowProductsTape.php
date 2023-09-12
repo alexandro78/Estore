@@ -19,9 +19,12 @@ class ShowProductsTape extends Component
     public $allCartItems;
     public $productIdsInCart;
     public $sessionCart;
+    public $productsIdInCart = [];
+
 
     protected $listeners = [
         'updateFilter',
+        'addToCart' => 'addToCart',
         'clickedOnModal' => 'getProductData'
     ];
 
@@ -33,39 +36,45 @@ class ShowProductsTape extends Component
     public function mount()
     {
         $this->updateFilter();
-        $this->allCartItems = Cart::where('customer_id', 1)->get();
-        $this->productIdsInCart = $this->allCartItems->pluck('product_id')->toArray();
-        $this->sessionCart = Session::get('cart');
+
+        $customerId = 1;
+        if (1 == 1) { /* Auth::check() */
+            $cart = Cart::where('customer_id', $customerId)->first();
+            if ($cart) {
+                $this->productIdsInCart = $cart->relatedProducts->pluck('id')->toArray();
+            }
+        } else {
+            $this->sessionCart = Session::get('cart');
+        }
     }
 
     public function addToCart($productId)
     {
+        $customerId = 1;
         $product = Product::findOrFail($productId);
-        $cartItem = Cart::where('customer_id', 1)
-                ->where('product_id', $productId)
-                ->first();
-        if (1 != 1) { /* Auth::check() */
 
-            if (!$cartItem) {
-                $customerId = 1;
+        //FIXME: Місце додавання товару в кошик або сесійний кошик з сторінки списку товарів.
+        if (1 != 1) { /* Auth::check() */
+            $cart = Cart::where('customer_id', $customerId)->first();
+            if (!$cart) {
                 $cart = new Cart();
-                $cart->quantity = $product->quantity;
-                $cart->total = isset($product->discount) ? ($product->price - $product->discount->price_off) * $product->quantity : $product->price * $product->quantity;
-                $cart->customer_id = $customerId;
-                $cart->product_id = $productId;
+                $cart->customer_id = 1;
                 $cart->save();
             }
-            $this->allCartItems = Cart::where('customer_id', 1)->get();
-            $this->productIdsInCart = $this->allCartItems->pluck('product_id')->toArray();
+            if (!$cart->relatedProducts->contains($productId)) {
+                $cart->relatedProducts()->attach($productId, ['quantity' => 1, 'total' => isset($product->discount) ? ($product->price - $product->discount->price_off) : $product->price]);
+                $cart->save();
+                $this->productsIdInCart[$productId] = true;
+            }
         } else {
             $cart = Session::get('cart', []);
 
             $cart[$productId] = [
                 'productName' => $product->name,
                 'productDescription' => $product->description,
-                'quantity' => $product->quantity,
+                'quantity' => 1,
                 'price' => isset($product->discount) ? $product->price - $product->discount->price_off : $product->price,
-                'total' => isset($product->discount) ? ($product->price - $product->discount->price_off) * $product->quantity : $product->price * $product->quantity
+                'total' => isset($product->discount) ? ($product->price - $product->discount->price_off) : $product->price
             ];
             Session::put('cart', $cart);
             $this->sessionCart = Session::get('cart');
@@ -74,8 +83,9 @@ class ShowProductsTape extends Component
 
     public function updateFilter()
     {
-        $userId = 1;
-        $filter = Filter::where('user_id', $userId)->first();
+        $sessionFilterUserId = Session::get('sessionFilterUserId');
+
+        $filter = Filter::where('current_filter', $sessionFilterUserId)->first();
         $query = Product::query();
 
         if (!is_null($filter)) {
@@ -93,9 +103,20 @@ class ShowProductsTape extends Component
                 $query->where('price', '<=', $filter->max_price);
             }
 
+            // Use the relationship for color filtering
             if (!is_null($filter->color_filter)) {
-                $query->where('color_code', $filter->color_filter);
+                $query->whereHas('colors', function ($query) use ($filter) {
+                    $query->where('color_code', $filter->color_filter);
+                });
             }
+
+            // Modify filtering by category_id
+            if (!is_null($filter->category_id)) {
+                $query->whereHas('categoryBelongsToProducts', function ($query) use ($filter) {
+                    $query->where('category_id', $filter->category_id);
+                });
+            }
+
             $this->products = $query->paginate(5);
         } else {
             $this->products = Product::paginate(5);
@@ -105,7 +126,7 @@ class ShowProductsTape extends Component
     public function render()
     {
         return view('livewire.front-livewire-components.show-products-tape', [
-            'products' => $this->products
+            'products' => $this->products,
         ]);
     }
 }

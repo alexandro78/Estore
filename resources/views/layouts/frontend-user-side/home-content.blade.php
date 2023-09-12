@@ -242,6 +242,4 @@
          </div>
      </section>
      <!-- ****** Popular Brands Area End ****** -->
-
-    
  @endsection

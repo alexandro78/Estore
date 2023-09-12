@@ -7,14 +7,18 @@
                 $randomGeneratedId = $randomChars . $randomId;
             @endphp
             <li data-toggle="collapse" data-target="#{{ $randomGeneratedId }}" class="collapsed">
-                <a
-                    href="{{ $category->children->count() > 0 ? '#' : route('filter.by.category', ['id' => $category->id]) }}">{{ $category->name }}<span
-                        class="{{ $category->children->count() > 0 ? 'arrow' : '' }}"></span></a>
+                @if ($category->children->count() > 0)
+                    <a href="#">{{ $category->name }}<span
+                            class="{{ $category->children->count() > 0 ? 'arrow' : '' }}"></span></a>
+                @else
+                    <a wire:click="$emit('clickedOnCategory', {{ $category->id }})" href="#">{{ $category->name }}<span
+                            class="{{ $category->children->count() > 0 ? 'arrow' : '' }}"></span></a>
+                @endif
                 @if ($category->children->count() > 0)
                     <ul class="sub-menu collapse" id="{{ $randomGeneratedId }}">
                         @foreach ($category->children as $child)
-                            <li><a
-                                    href="{{ route('filter.by.category', ['id' => $child->id]) }}">{{ $child->name }}</a>
+                            <li>
+                                <a wire:click="$emit('clickedOnCategory', {{ $child->id }})" href="#">{{ $child->name }}</a>
                             </li>
                         @endforeach
                     </ul>
@@ -23,3 +27,6 @@
         @endforeach
     </ul>
 </div>
+
+
+

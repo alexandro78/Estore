@@ -13,11 +13,13 @@ return new class extends Migration
     {
         Schema::create('filters', function (Blueprint $table) {
             $table->id();
+            $table->string('current_filter', 50)->unique();
+            // $table->integer('category_id')->nullable();
             $table->integer('min_price')->nullable();
             $table->integer('max_price')->nullable();
             $table->string('color_filter')->nullable();
             $table->enum('size_filter', ['NULL', 'XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'])->default('NULL')->nullable();
-            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

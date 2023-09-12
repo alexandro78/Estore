@@ -15,13 +15,12 @@ return new class extends Migration
             $table->id();
             $table->date('order_date');
             $table->string('order_number')->unique();
-            $table->string('product_code')->unique();
             $table->string('delivery_service');
             $table->string('street_delivery_point');
             $table->string('payment_method');
             $table->string('payment_status');
             $table->decimal('total', 10, 2);
-            $table->string('shipping_address');
+            $table->string('shipping_address')->nullable();
             $table->string('shipping_status');
             $table->string('first_name');
             $table->string('last_name');

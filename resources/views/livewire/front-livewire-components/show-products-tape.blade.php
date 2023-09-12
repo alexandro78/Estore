@@ -16,24 +16,32 @@
                         </div>
                         <!-- Product Description -->
                         <div wire:click="$emit('updateFilter')" class="product-description">
-                            <h4 class="product-price">$ {{ $product->price }}</h4>
+                            @if (isset($product) && !is_null($product->discount))
+                                <h4 style="text-decoration: line-through;" class="product-price">$ {{ $product->price }}</h4>
+                                <h4 style="color: #e29d11;" class="product-price">$ {{ $product->price - $product->discount->price_off }}</h4>
+                            @else
+                                <h4 class="product-price">$ {{ $product->price }}</h4>
+                            @endif
                             <p>{{ $product->name }} {{ $product->description }}</p>
                             <!-- Add to Cart -->
-                            @if (1 != 1) {{-- auth()->check() --}}
-                                @if (isset($productIdsInCart) && in_array($product->id, $productIdsInCart))
+                            {{-- //FIXME: Місце додавання товару в кошик або сесійний кошик з сторінки списку товарів. --}}
+                            @if (1 != 1)
+                                @if (
+                                    (isset($productIdsInCart) && in_array($product->id, $productIdsInCart)) ||
+                                        (isset($productsIdInCart[$product->id]) && $productsIdInCart[$product->id]))
                                     <a href="#" class="added-marker add-to-cart-btn"
-                                        wire:click="addToCart({{ $product->id }})">ADDED111</a>
+                                        wire:click="$emit('addToCart',{{ $product->id }})">ADDED</a>
                                 @else
                                     <a href="#" class="add-to-cart-btn"
-                                        wire:click="addToCart({{ $product->id }})">ADD TO CART111</a>
+                                        wire:click="$emit('addToCart',{{ $product->id }})">ADD TO CART</a>
                                 @endif
                             @else
                                 @if (isset($sessionCart) && array_key_exists($product->id, $sessionCart))
                                     <a href="#" class="added-marker add-to-cart-btn"
-                                        wire:click="addToCart({{ $product->id }})">ADDED2222</a>
+                                        wire:click="$emit('addToCart',{{ $product->id }})">ADDED2222</a>
                                 @else
                                     <a href="#" class="add-to-cart-btn"
-                                        wire:click="addToCart({{ $product->id }})">ADD TO CART3333</a>
+                                        wire:click="$emit('addToCart',{{ $product->id }})">ADD TO CART3333</a>
                                 @endif
                             @endif
                         </div>
