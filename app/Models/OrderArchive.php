@@ -10,30 +10,33 @@ class OrderArchive extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_name',
-        'product_description',
-        'product_size',
-        'product_color',
-        'quantity',
-        'price',
-        'total',
-        'order_id',
-        'customer_id',
-        'order_date',
+        'order_number',
         'note',
         'status',
         'delivery_method',
         'payment_method',
+        'country',
         'destination_city',
+        'street_delivery_point',
+        'shipping_address',
+        'first_name',
+        'last_name',
+        'phone_number',
+        'company',
+        'street_address',
+        'postcode',
+        'email_address',
+        'order_date',
     ];
-    
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);
     }
 
-    public function order()
+    //?
+    public function orderedProducts()
     {
-        return $this->belongsTo(Order::class);
+        return $this->hasMany(OrderedProduct::class);
     }
 }

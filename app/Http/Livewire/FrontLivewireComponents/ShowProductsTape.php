@@ -53,8 +53,8 @@ class ShowProductsTape extends Component
         $customerId = 1;
         $product = Product::findOrFail($productId);
 
-        //FIXME: Місце додавання товару в кошик або сесійний кошик з сторінки списку товарів.
-        if (1 != 1) { /* Auth::check() */
+        //FIXME: The place to add a product to the cart or session cart from the product listing page.
+        if (1 == 1) { /* Auth::check() */
             $cart = Cart::where('customer_id', $customerId)->first();
             if (!$cart) {
                 $cart = new Cart();
@@ -72,12 +72,13 @@ class ShowProductsTape extends Component
             $cart[$productId] = [
                 'productName' => $product->name,
                 'productDescription' => $product->description,
+                'product_size' => null,
+                'product_color' => null,
                 'quantity' => 1,
                 'price' => isset($product->discount) ? $product->price - $product->discount->price_off : $product->price,
                 'total' => isset($product->discount) ? ($product->price - $product->discount->price_off) : $product->price
             ];
             Session::put('cart', $cart);
-            $this->sessionCart = Session::get('cart');
         }
     }
 

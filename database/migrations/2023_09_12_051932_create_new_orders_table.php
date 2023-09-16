@@ -13,22 +13,24 @@ return new class extends Migration
     {
         Schema::create('new_orders', function (Blueprint $table) {
             $table->id();
-            $table->string('product_name');
-            $table->text('product_description')->nullable();
-            $table->string('product_size')->nullable();
-            $table->string('product_color')->nullable();
-            $table->integer('quantity');
-            $table->decimal('price', 10, 2);
-            $table->decimal('total', 10, 2);
+            $table->string('order_number')->unique();
             $table->text('note')->nullable();
             $table->string('status');
             $table->string('delivery_method');
             $table->string('payment_method');
+            $table->string('country');
             $table->string('destination_city');
-
-            $table->foreignId('order_id')->nullable()->constrained('orders')->nullOnDelete()->cascadeOnUpdate();
-            $table->foreignId('customer_id')->nullable()->constrained('customers')->nullOnDelete()->cascadeOnUpdate();
+            $table->string('street_delivery_point'); 
+            $table->string('shipping_address')->nullable();
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('phone_number');
+            $table->string('company')->nullable();
+            $table->string('street_address')->nullable();
+            $table->string('postcode')->nullable();
+            $table->string('email_address');
             $table->date('order_date');
+            // $table->foreignId('customer_id')->nullable()->constrained('customers')->nullOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

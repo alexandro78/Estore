@@ -18,26 +18,31 @@
                         <form>
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <input type="text" class="form-control" id="first_name" value="№ замовлення:" readonly>
+                                    <input type="text" class="form-control" id="first_name" value="№ замовлення:"
+                                        readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <input type="text" class="form-control" id="last_name" value="{{$orderNumber}}" readonly>
+                                    <input type="text" class="form-control" id="last_name" value="{{ $orderNumber }}"
+                                        readonly>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <input type="text" class="form-control" id="first_name" value="Дата:" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <input type="text" class="form-control" id="last_name" value="{{$orderDate}}" readonly>
+                                    <input type="text" class="form-control" id="last_name" value="{{ $orderDate }}"
+                                        readonly>
                                 </div>
                                 <div class="col-md-4 mb-3">
                                     <input type="text" class="form-control" id="first_name" value="Час:" readonly>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <input type="text" class="form-control" id="last_name" value="{{$ordertTime}}"readonly>
+                                    <input type="text" class="form-control" id="last_name"
+                                        value="{{ $ordertTime }}"readonly>
                                 </div>
                                 <div class="col-12 mb-3">
                                     <label for="city">Місто доставки</label>
-                                    <input type="text" class="form-control" id="city" value="{{$city}}" readonly>
+                                    <input type="text" class="form-control" id="city" value="{{ $city }}"
+                                        readonly>
                                 </div>
 
                                 <div class="col-12 mb-3">
@@ -60,11 +65,15 @@
 
                         <ul class="order-details-form mb-4">
                             <li><span>Товар</span> <span>сума</span></li>
-                            @foreach ($productsInCart as $productInCart)
-                                <li><span>{{ $productInCart->name }} - ({{ $productInCart->pivot->quantity }}) шт.</span>
-                                    <span>{{ $productInCart->discount_id ? ($productInCart->price - $productInCart->discount->price_off) * $productInCart->pivot->quantity : $productInCart->price * $productInCart->pivot->quantity }} грн.</span>
-                                </li>
-                            @endforeach
+                            @if ($productsInCart)
+                                @foreach ($productsInCart as $productInCart)
+                                    <li><span>{{ $productInCart->name }} - ({{ $productInCart->pivot->quantity }})
+                                            шт.</span>
+                                        <span>{{ $productInCart->discount_id ? ($productInCart->price - $productInCart->discount->price_off) * $productInCart->pivot->quantity : $productInCart->price * $productInCart->pivot->quantity }}
+                                            грн.</span>
+                                    </li>
+                                @endforeach
+                            @endif
                             <li><span>Доставка</span>
                                 <span>{{ $selectedShippingMethod == 1 ? 'Нова пошта' : 'УкрПошта' }}</span>
                             </li>
@@ -83,7 +92,7 @@
                                 <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne"
                                     data-parent="#accordion">
                                     <div class="card-body">
-                                        <p>{{$selectedShippingMethod == 1 ? "Нова Пошта" : "УкрПошта"}}</p>
+                                        <p>{{ $selectedShippingMethod == 1 ? 'Нова Пошта' : 'УкрПошта' }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -98,12 +107,13 @@
                                 <div id="collapseTwo" class="collapse" role="tabpanel" aria-labelledby="headingTwo"
                                     data-parent="#accordion">
                                     <div class="card-body">
-                                        <p>{{$selectedPaymentMethod}}</p>
+                                        <p>{{ $selectedPaymentMethod }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <a style="background-color:#484747;" href="#" class="btn karl-checkout-btn" id="submit-order-btn">Переглянути інші товари</a>
+                        <a style="background-color:#484747;" href="#" class="btn karl-checkout-btn"
+                            id="submit-order-btn">Переглянути інші товари</a>
                     </div>
                 </div>
             </div>

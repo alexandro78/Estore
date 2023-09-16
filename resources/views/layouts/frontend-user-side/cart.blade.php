@@ -20,7 +20,7 @@
                                 <tbody>
                                    {{-- //FIXME: місце виводу продуктів в кошику --}}
 
-                                    @if (1 != 1)
+                                    @if (1 == 1)
                                         {{-- auth()->check() --}}
                                         @if ($productsInCart)
                                             @foreach ($productsInCart as $productInCart)

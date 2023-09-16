@@ -1,6 +1,9 @@
 <div class="col-12 col-md-8 col-lg-9">
     <div id="search" class="shop_grid_product_area">
         <div class="row">
+            @php
+                $sessionCart = Session::get('cart');
+            @endphp
             @if ($products)
                 @foreach ($products as $product)
                     <!-- Single gallery Item -->
@@ -17,15 +20,17 @@
                         <!-- Product Description -->
                         <div wire:click="$emit('updateFilter')" class="product-description">
                             @if (isset($product) && !is_null($product->discount))
-                                <h4 style="text-decoration: line-through;" class="product-price">$ {{ $product->price }}</h4>
-                                <h4 style="color: #e29d11;" class="product-price">$ {{ $product->price - $product->discount->price_off }}</h4>
+                                <h4 style="text-decoration: line-through;" class="product-price">$ {{ $product->price }}
+                                </h4>
+                                <h4 style="color: #e29d11;" class="product-price">$
+                                    {{ $product->price - $product->discount->price_off }}</h4>
                             @else
                                 <h4 class="product-price">$ {{ $product->price }}</h4>
                             @endif
                             <p>{{ $product->name }} {{ $product->description }}</p>
                             <!-- Add to Cart -->
                             {{-- //FIXME: Місце додавання товару в кошик або сесійний кошик з сторінки списку товарів. --}}
-                            @if (1 != 1)
+                            @if (1 == 1)
                                 @if (
                                     (isset($productIdsInCart) && in_array($product->id, $productIdsInCart)) ||
                                         (isset($productsIdInCart[$product->id]) && $productsIdInCart[$product->id]))
@@ -38,10 +43,10 @@
                             @else
                                 @if (isset($sessionCart) && array_key_exists($product->id, $sessionCart))
                                     <a href="#" class="added-marker add-to-cart-btn"
-                                        wire:click="$emit('addToCart',{{ $product->id }})">ADDED2222</a>
+                                        wire:click="$emit('addToCart',{{ $product->id }})">ADDED</a>
                                 @else
                                     <a href="#" class="add-to-cart-btn"
-                                        wire:click="$emit('addToCart',{{ $product->id }})">ADD TO CART3333</a>
+                                        wire:click="$emit('addToCart',{{ $product->id }})">ADD TO CART</a>
                                 @endif
                             @endif
                         </div>
