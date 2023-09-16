@@ -12,8 +12,9 @@ use App\Models\Product;
 use App\Models\Filter;
 use App\Models\SizeDetail;
 use App\Models\Size;
-use App\Models\Order;
+use App\Models\NewOrder;
 use Illuminate\Support\Facades\Auth;
+use App\Models\OrderedProduct;
 
 
 class MainFrontendController extends Controller
@@ -104,6 +105,7 @@ class MainFrontendController extends Controller
         $product = Product::find($id);
         $sizes = $product->sizes;
         $sizeEntry = Size::find($productSizeId);
+        session()->put('selectedSize', $sizeEntry->size); // TODO: session()->put('selectedSize', $sizeEntry->size);
 
         if ($sizeEntry) {
             $sizeName = $sizeEntry->size;
@@ -264,7 +266,7 @@ class MainFrontendController extends Controller
         $customerId = 1;
         $allProductPriseTotal = 0;
         $productsInCart = NULL;
-        if (1 != 1)/* Auth::check() */ {
+        if (1 == 1)/* Auth::check() */ {
             $customerCart = Cart::where('customer_id', $customerId)->first();
             $productsInCart = $customerCart->relatedProducts;
 
@@ -289,7 +291,7 @@ class MainFrontendController extends Controller
             'productsInCart' => $productsInCart,
             'selectedShippingMethod' => $selectedShippingMethod,
             'allProductPriseTotal' => $allProductPriseTotal,
-            'sessionCart' => $sessionCart
+            'sessionCart' => isset($sessionCart) ? $sessionCart : null
         ]);
     }
 
@@ -312,19 +314,20 @@ class MainFrontendController extends Controller
         $customCheck2 = $request->input("create_account");
 
         $allProductPriseTotal = 0;
-        if (1 != 1) {
+        $productsInCart = null;
+        if (1 == 1) {
             $customerId = 1;
             $customerCart = Cart::where('customer_id', $customerId)->first();
-            $productsInCart = $customerCart->relatedProducts;
             if ($customerCart) {
                 $productsInCart = $customerCart->relatedProducts;
-
-                foreach ($productsInCart as $product) {
-                    if ($product->discount_id) {
-                        $allProductPriseTotal += $product->price * $product->pivot->quantity;
-                        $allProductPriseTotal -= (optional($product->discount)->price_off * $product->pivot->quantity);
-                    } else {
-                        $allProductPriseTotal += $product->price * $product->pivot->quantity;
+                if ($productsInCart) {
+                    foreach ($productsInCart as $product) {
+                        if ($product->discount_id) {
+                            $allProductPriseTotal += $product->price * $product->pivot->quantity;
+                            $allProductPriseTotal -= (optional($product->discount)->price_off * $product->pivot->quantity);
+                        } else {
+                            $allProductPriseTotal += $product->price * $product->pivot->quantity;
+                        }
                     }
                 }
             }
@@ -335,34 +338,79 @@ class MainFrontendController extends Controller
         $ordertTime = date('H:i');
         $orderNumber = mt_rand(1000, 9999) . date('is');
 
-        $order = new Order();
-        $order->order_date = $orderDate;
+        //save data to new order table////
+        $order = new NewOrder();
         $order->order_number = $orderNumber;
-        $order->delivery_service = $selectedShippingMethod;
-        $order->street_delivery_point = $deliveryPoint;
+        $order->note = null;
+        $order->status = 'pending';
+        $order->delivery_method = $selectedShippingMethod;
         $order->payment_method = $selectedPaymentMethod;
-        $order->payment_status = 'pending';
-        $order->total = 8888;
+        $order->country = $country;
+        $order->destination_city = $city;
+        $order->street_delivery_point = $deliveryPoint;
         $order->shipping_address = $streetAddress;
-        $order->shipping_status = 'pending';
         $order->first_name = $firstName;
         $order->last_name = $lastName;
         $order->phone_number = $phoneNumber;
         $order->company = $company;
-        $order->country = $country;
         $order->street_address = $streetAddress;
         $order->postcode = $postcode;
-        $order->city = $city;
         $order->email_address = $emailAddress;
-        $order->status = 'pending';
-        $order->notes = null;
-
-        $order->customer_id = 1;
-        $order->cart_id = $customerCart->id; //FIXME: зупинився на цьому місці (потрібно створити корзину для незареестрованних користувачів)
+        $order->order_date = $orderDate;
         $order->save();
-        $customerCart->customer_id = null;
-        $customerCart->save();
 
+        $selectedSize = null;
+        if (session()->has('selectedSize')) {
+            $selectedSize = session()->get('selectedSize');
+        }
+
+        if (1 == 1) {
+            //зберегти всі продукти з кошика або з сесійного кошика в модель OrderedProduct
+            $count = 0;
+            $customerCart = Cart::where('customer_id', $customerId)->first();
+
+            if ($customerCart) {
+                $cartProducts = $customerCart->relatedProducts()->get();
+                foreach ($cartProducts as $cartProduct) {
+                    $orderedProduct = new OrderedProduct([
+                        'article' => $orderNumber . $count++, //$productData['article'],
+                        'product_name' => $cartProduct->name,
+                        'product_description' => $cartProduct->description,
+                        'product_size' => $selectedSize,
+                        'product_color' => $cartProduct->color,
+                        'quantity' => $cartProduct->pivot->quantity,
+                        'price' => isset($cartProduct->discount) ? $cartProduct->price - $cartProduct->discount->price_off : $cartProduct->price,
+                        'total' => $cartProduct->pivot->total,
+                    ]);
+
+                    $orderedProduct->save();
+                    $order->orderedProducts()->attach($orderedProduct, [
+                        'customer_id' => 1,
+                    ]);
+                }
+                $order->save();
+            }
+        } else {
+            $cart = Session::get('cart', []);
+            $count = 0;
+            foreach ($cart as $cartItemData) {
+                $orderedProduct = new OrderedProduct([
+                    'article' => $orderNumber . $count++, //$productData['article'],
+                    'product_name' => $cartItemData['productName'],
+                    'product_description' => $cartItemData['productDescription'],
+                    'product_size' => $selectedSize,
+                    'product_color' => $cartItemData['product_color'],
+                    'quantity' => $cartItemData['quantity'],
+                    'price' => $cartItemData['price'],
+                    'total' => $cartItemData['total'],
+                ]);
+
+                $orderedProduct->save();
+                $order->orderedProducts()->attach($orderedProduct);
+            }
+            $order->save();
+            Session::forget('cart');
+        }
 
         return view('layouts.frontend-user-side.saved-order', [
             'selectedShippingMethod' => $selectedShippingMethod,
