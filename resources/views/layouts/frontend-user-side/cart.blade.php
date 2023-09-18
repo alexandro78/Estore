@@ -19,9 +19,7 @@
                                 </thead>
                                 <tbody>
                                    {{-- //FIXME: місце виводу продуктів в кошику --}}
-
-                                    @if (1 == 1)
-                                        {{-- auth()->check() --}}
+                                    @if (Auth::check())
                                         @if ($productsInCart)
                                             @foreach ($productsInCart as $productInCart)
                                                 <tr>

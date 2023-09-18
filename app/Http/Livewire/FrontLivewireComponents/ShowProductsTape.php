@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Filter;
 use App\Models\Product;
 use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
 
 class ShowProductsTape extends Component
 {
@@ -28,6 +29,15 @@ class ShowProductsTape extends Component
         'clickedOnModal' => 'getProductData'
     ];
 
+    private function checkAuth()
+    {
+        if ($user = Auth::user()) {
+            return $user->customer->id;
+        } else {
+            return null;
+        }
+    }
+
     public function getProductData($productId)
     {
         $this->emit('sendDataToQuickViewModal', $productId);
@@ -37,8 +47,12 @@ class ShowProductsTape extends Component
     {
         $this->updateFilter();
 
-        $customerId = 1;
-        if (1 == 1) { /* Auth::check() */
+
+        // TODO: замінити у всих місцях на таку перевірку
+        $customerId = $this->checkAuth();
+        //////////////////////////////////////////////////
+
+        if ($customerId) { /* Auth::check() */
             $cart = Cart::where('customer_id', $customerId)->first();
             if ($cart) {
                 $this->productIdsInCart = $cart->relatedProducts->pluck('id')->toArray();
@@ -50,15 +64,21 @@ class ShowProductsTape extends Component
 
     public function addToCart($productId)
     {
-        $customerId = 1;
+
+        if ($user = Auth::user()) {
+            $customerId = $user->customer->id;
+        } else {
+            $customerId = null;
+        }
+        
         $product = Product::findOrFail($productId);
 
         //FIXME: The place to add a product to the cart or session cart from the product listing page.
-        if (1 == 1) { /* Auth::check() */
+        if ($customerId) { /* Auth::check() */
             $cart = Cart::where('customer_id', $customerId)->first();
             if (!$cart) {
                 $cart = new Cart();
-                $cart->customer_id = 1;
+                $cart->customer_id = $user->customer->id;
                 $cart->save();
             }
             if (!$cart->relatedProducts->contains($productId)) {

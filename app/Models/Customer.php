@@ -42,4 +42,10 @@ class Customer extends Model
         return $this->belongsToMany(OrderedProduct::class, 'new_order_ordered_product', 'customer_id', 'ordered_product_id')
             ->withTimestamps();
     }
+
+    //one-to-one between Customer and User
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

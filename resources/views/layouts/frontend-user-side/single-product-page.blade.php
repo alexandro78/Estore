@@ -133,7 +133,7 @@
                             </div>
 
                             {{-- //FIXME: Місце додавання товару в кошик або сесійний кошик зі сторінки окремого товару. --}}
-                            @if (1 != 1)
+                            @if (Auth::check())
                                 {{-- auth()->check() --}}
                                 @if ($cartItem)
                                     <button style="background-color: green;" type="submit" name="addtocart"

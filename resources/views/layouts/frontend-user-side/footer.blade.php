@@ -14,8 +14,7 @@
                             Copyright &copy;
                             <script>
                                 document.write(new Date().getFullYear());
-                            </script> All rights reserved<i class="fa fa-heart-o"
-                                aria-hidden="true"></i>
+                            </script> All rights reserved<i class="fa fa-heart-o" aria-hidden="true"></i>
                             <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
                         </p>
                     </div>
@@ -34,11 +33,20 @@
             <!-- Single Footer Area Start -->
             <div class="col-12 col-sm-6 col-md-3 col-lg-2">
                 <div class="single_footer_area">
+                    @auth
+                        Привіт {{ Auth::user()->name }}!
+                    @endauth
                     <ul class="footer_widget_menu">
-                     <!-- placeholder -->
-                     <li><a href="#">My Account</a></li> 
-                     <li><a href="#">Всі товари</a></li>
-                     <li><a href="#">Contact</a></li>
+                        <!-- placeholder -->
+                        @auth
+                            <form method="POST" action="{{ route('logout') }}" name="logout-form">
+                                @csrf
+                                <li><a href="#" id="logout-link">Вийти</a></li>
+                            </form>
+                        @else
+                            <li><a href="{{ route('login') }}">Увійти</a></li>
+                            <li><a href="{{ route('register') }}">Зареєструватися</a></li>
+                        @endauth
                     </ul>
                 </div>
             </div>
@@ -74,5 +82,16 @@
             </div>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.forms['logout-form'].submit();
+                });
+            }
+        });
+    </script>
 </footer>
 <!-- ****** Footer Area End ****** -->

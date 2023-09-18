@@ -19,6 +19,15 @@ use App\Models\OrderedProduct;
 
 class MainFrontendController extends Controller
 {
+    private function checkAuth()
+    {
+        if ($user = Auth::user()) {
+            return $user->customer->id;
+        } else {
+            return null;
+        }
+    }
+
     public function addToCart(Request $request)
     {
         $data = $request->json()->all();
@@ -70,8 +79,8 @@ class MainFrontendController extends Controller
     {
         $cartItem = false;
         $sessionCart = false;
-        if (1 == 1) { //auth()->check()
-            $customerId = 1;
+        $customerId = $this->checkAuth();
+        if ($customerId) { //auth()->check()
             $cart = Cart::where('customer_id', $customerId)->first();
             $cartItem = $cart->relatedProducts->find($id);
         } else {
@@ -96,9 +105,9 @@ class MainFrontendController extends Controller
 
     public function getProductBySize($id, $productSizeId)
     {
-        $cartItem = false;
-        if (1 == 1) { //auth()->check()
-            $customerId = 1;
+        $customerId = $this->checkAuth();
+       
+        if ($customerId) {
             $cart = Cart::where('customer_id', $customerId)->first();
             $cartItem = $cart->relatedProducts->find($id);
         }
@@ -136,9 +145,9 @@ class MainFrontendController extends Controller
     {
         $quantity = $request->input('quantity');
         $product = Product::findOrFail($id);
-        $customerId = 1;
+        $customerId = $this->checkAuth();
 
-        if (1 != 1) { /* Auth::check() */
+        if ($customerId) { /* Auth::check() */
             $cart = Cart::where('customer_id', $customerId)->first();
             if (!$cart) {
                 $cart = new Cart();
@@ -167,9 +176,10 @@ class MainFrontendController extends Controller
     }
 
     //FIXME: місце виводу продуктів к корзину
-    public function showCartPage()
+    public function showCartPage() ///////////////////////////////8888
     {
-        $customerId = 1;
+        $customerId = $this->checkAuth();
+
         $customerCart = Cart::where('customer_id', $customerId)->first();
         $productsInCart = optional($customerCart)->relatedProducts;
         $allProductPriseTotal = 0;
@@ -187,7 +197,7 @@ class MainFrontendController extends Controller
             }
         }
         $sessionCart = Session::get('cart', []);
-        if (1 == 1) {
+        if ($customerId) {
             foreach ($sessionCart as $item) {
                 $allProductPriseTotal += $item['total'];
             }
@@ -203,7 +213,9 @@ class MainFrontendController extends Controller
 
     public function updateCartPage(Request $request)
     {
-        $customerId = 1;
+        // $customerId = Auth::id();
+        $customerId = $this->checkAuth();
+
         $quantities = $request->input('quantities');
         if ($quantities) {
             foreach ($quantities as $productId => $quantity) {
@@ -215,7 +227,7 @@ class MainFrontendController extends Controller
                     $price = 0;
                 }
 
-                if (1 != 1) {/* Auth::check() */
+                if ($customerId) {/* Auth::check() */
                     $customerCart = Cart::where('customer_id', $customerId)->first();
                     $customerCart->relatedProducts()->updateExistingPivot($productId, [
                         'quantity' => $quantity,
@@ -240,8 +252,9 @@ class MainFrontendController extends Controller
 
     public function clearCart()
     {
-        $customerId = 1;
-        if (1 == 1)/* Auth::check() */ {
+        $customerId = $this->checkAuth();
+
+        if ($customerId)/* Auth::check() */ {
             $customerCart = Cart::where('customer_id', $customerId)->first();
             if ($customerCart) {
                 $customerCart->relatedProducts()->detach();
@@ -256,17 +269,17 @@ class MainFrontendController extends Controller
 
     public function proceedToCheckout(Request $request)
     {
-        $customerId = 1;
+        $customerId = $this->checkAuth();
+
         $request->validate([
             'radio-input' => 'required'
         ]);
         $selectedShippingMethod = $request->input('radio-input');
         Session::put('selectedShippingMethod', $selectedShippingMethod);
 
-        $customerId = 1;
         $allProductPriseTotal = 0;
         $productsInCart = NULL;
-        if (1 == 1)/* Auth::check() */ {
+        if ($customerId)/* Auth::check() */ {
             $customerCart = Cart::where('customer_id', $customerId)->first();
             $productsInCart = $customerCart->relatedProducts;
 
@@ -280,7 +293,7 @@ class MainFrontendController extends Controller
             }
         } else {
             $sessionCart = Session::get('cart');
-            if (1 == 1) {
+            if ($sessionCart) {
                 foreach ($sessionCart as $item) {
                     $allProductPriseTotal += $item['total'];
                 }
@@ -315,8 +328,14 @@ class MainFrontendController extends Controller
 
         $allProductPriseTotal = 0;
         $productsInCart = null;
-        if (1 == 1) {
-            $customerId = 1;
+
+        if ($user = Auth::user()) {
+            $customerId = $user->customer->id;
+        } else {
+            $customerId = null;
+        }
+
+        if ($customerId) {
             $customerCart = Cart::where('customer_id', $customerId)->first();
             if ($customerCart) {
                 $productsInCart = $customerCart->relatedProducts;
@@ -364,7 +383,7 @@ class MainFrontendController extends Controller
             $selectedSize = session()->get('selectedSize');
         }
 
-        if (1 == 1) {
+        if ($customerId) {
             //зберегти всі продукти з кошика або з сесійного кошика в модель OrderedProduct
             $count = 0;
             $customerCart = Cart::where('customer_id', $customerId)->first();
@@ -385,7 +404,7 @@ class MainFrontendController extends Controller
 
                     $orderedProduct->save();
                     $order->orderedProducts()->attach($orderedProduct, [
-                        'customer_id' => 1,
+                        'customer_id' => $customerId,
                     ]);
                 }
                 $order->save();

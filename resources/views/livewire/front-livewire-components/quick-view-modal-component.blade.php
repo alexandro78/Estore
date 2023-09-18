@@ -54,7 +54,7 @@
                                         </div>
                                         
                                         {{-- //FIXME: Місце додавання товару в кошик або сесійний кошик з модального вікна товару. --}}
-                                        @if (1 != 1)
+                                        @if (Auth::check())
                                             {{-- auth()->check() --}}
                                             @if ($checkIfItemAdded)
                                                 <button style="background-color: green; color: white;" type="submit"

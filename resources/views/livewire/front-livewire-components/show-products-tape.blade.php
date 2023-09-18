@@ -30,7 +30,7 @@
                             <p>{{ $product->name }} {{ $product->description }}</p>
                             <!-- Add to Cart -->
                             {{-- //FIXME: Місце додавання товару в кошик або сесійний кошик з сторінки списку товарів. --}}
-                            @if (1 == 1)
+                            @if (Auth::check())
                                 @if (
                                     (isset($productIdsInCart) && in_array($product->id, $productIdsInCart)) ||
                                         (isset($productsIdInCart[$product->id]) && $productsIdInCart[$product->id]))

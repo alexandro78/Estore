@@ -22,9 +22,8 @@ class QuickViewModalComponent extends Component
     {
         $this->productId = $productId;
         $this->product = Product::find($productId);
-
-        if (1 == 1) {  // auth()->check()
-            $customerId = 1;
+        $customerId = Auth::id();
+        if ($customerId) {  // auth()->check()
             $cart = Cart::where('customer_id', $customerId)->first();
             if ($cart) {
                 $this->checkIfItemAdded = $cart->relatedProducts->contains($productId);
@@ -47,8 +46,7 @@ class QuickViewModalComponent extends Component
         $product = Product::findOrFail($productId);
 
         //FIXME: Місце додавання товару в кошик або сесійний кошик з модального вікна товару.
-        if (1 != 1) { // auth()->check()
-            $customerId = 1;
+        if ($customerId = Auth::id()) { // auth()->check()
             $cart = Cart::where('customer_id', $customerId)->first();
             if (!$cart) {
                 $cart = new Cart();
