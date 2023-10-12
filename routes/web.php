@@ -66,7 +66,7 @@ Route::get('/image-delete/{id}/{productId}', [MainAdminController::class, 'image
 
 ////////////////////////////////////***** Frontend routes *****///////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-Route::get('/home', [MainFrontendController::class, 'showHome'])->name('home');
+
 Route::post('/add-to-cart', [NewArrivals::class, 'addToCart'])->name('cart.add');
 Route::post('/subscribe', [MainFrontendController::class, 'subscribe'])->name('subscribe');
 
@@ -91,20 +91,21 @@ Route::get('/clear-cart', [MainFrontendController::class, 'clearCart'])->name('c
 Route::post('/checkout', [MainFrontendController::class, 'proceedToCheckout'])->name('checkout');
 Route::post('/save-new-order', [MainFrontendController::class, 'saveNewOrder'])->name('save.new.order');
 Route::post('/saved-order', [MainFrontendController::class, 'savedNewOrder'])->name('saved.order');
+Route::get('/new-order', [MainFrontendController::class, 'newOrder'])->name('new.order');
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 
-Route::middleware('auth')->group(function () {
+Route::prefix('dashboard')->middleware('auth')->group(function () {
     // Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     // Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     // Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    // Route::get('/mc', [MainAdminController::class, 'ifregistered']);  
+    Route::get('/home', [MainFrontendController::class, 'showHome'])->name('home');
 });
 
 require __DIR__ . '/auth.php';

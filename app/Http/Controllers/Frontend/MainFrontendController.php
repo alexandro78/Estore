@@ -106,7 +106,7 @@ class MainFrontendController extends Controller
     public function getProductBySize($id, $productSizeId)
     {
         $customerId = $this->checkAuth();
-       
+
         if ($customerId) {
             $cart = Cart::where('customer_id', $customerId)->first();
             $cartItem = $cart->relatedProducts->find($id);
@@ -176,11 +176,16 @@ class MainFrontendController extends Controller
     }
 
     //FIXME: місце виводу продуктів к корзину
-    public function showCartPage() ///////////////////////////////8888
+    public function showCartPage()
     {
-        $customerId = $this->checkAuth();
+        $customerId = 1;
 
-        $customerCart = Cart::where('customer_id', $customerId)->first();
+        if ($customerId) {
+            $customerCart = Cart::where('customer_id', $customerId)->first();
+        } else {
+            $customerCart = null;
+        }
+
         $productsInCart = optional($customerCart)->relatedProducts;
         $allProductPriseTotal = 0;
         if ($customerCart) {
@@ -188,6 +193,7 @@ class MainFrontendController extends Controller
 
             foreach ($productsInCart as $product) {
                 $cartItem = $customerCart->relatedProducts->where('id', $product->id)->first();
+                $allProductQuantity = $cartItem->pivot->quantity;
                 if ($product->discount_id) {
                     $allProductPriseTotal += $product->price * $cartItem->pivot->quantity;
                     $allProductPriseTotal -= (optional($product->discount)->price_off * $cartItem->pivot->quantity);
@@ -195,19 +201,19 @@ class MainFrontendController extends Controller
                     $allProductPriseTotal += $product->price * $cartItem->pivot->quantity;
                 }
             }
-        }
-        $sessionCart = Session::get('cart', []);
-        if ($customerId) {
-            foreach ($sessionCart as $item) {
-                $allProductPriseTotal += $item['total'];
+        } else {
+            $sessionCart = Session::get('cart', []);
+            if ($sessionCart) {
+                foreach ($sessionCart as $item) {
+                    $allProductPriseTotal += $item['total'];
+                }
             }
         }
-
 
         return view('layouts.frontend-user-side.cart', [
             'allProductPriseTotal' => $allProductPriseTotal,
             'productsInCart' => $productsInCart,
-            'sessionCart' => $sessionCart
+            'sessionCart' => isset($sessionCart) ? $sessionCart : null
         ]);
     }
 
@@ -266,7 +272,7 @@ class MainFrontendController extends Controller
         }
         return redirect()->back();
     }
-
+    // TODO: last check 
     public function proceedToCheckout(Request $request)
     {
         $customerId = $this->checkAuth();
@@ -307,6 +313,36 @@ class MainFrontendController extends Controller
             'sessionCart' => isset($sessionCart) ? $sessionCart : null
         ]);
     }
+
+    
+    public function newOrder()
+    {
+        $orderNumber = session('orderNumber');
+        $selectedShippingMethod = session('selectedShippingMethod');
+        $selectedPaymentMethod = session('selectedPaymentMethod');
+        $allProductPriseTotal = session('allProductPriseTotal');
+        $city = session('city');
+        $orderDate = session('orderDate');
+        $orderTime = session('orderTime');
+
+        $order = NewOrder::where('order_number', $orderNumber)->first();
+
+        if ($order) {
+            $productsInCart = $order->orderedProducts;
+        }
+
+        return view('layouts.frontend-user-side.new-order', [
+            'city' => $city,
+            'orderDate' => $orderDate,
+            'ordertTime' => $orderTime,
+            'orderNumber' => $orderNumber,
+            'productsInCart' => $productsInCart,
+            'allProductPriseTotal' => $allProductPriseTotal,
+            'selectedPaymentMethod' => $selectedPaymentMethod,
+            'selectedShippingMethod' => $selectedShippingMethod,
+        ]);
+    }
+
 
     public function saveNewOrder(Request $request)
     {
@@ -354,8 +390,9 @@ class MainFrontendController extends Controller
 
         date_default_timezone_set('Europe/Kiev');
         $orderDate = date('d.m.Y');
-        $ordertTime = date('H:i');
+        $orderTime = date('H:i');
         $orderNumber = mt_rand(1000, 9999) . date('is');
+        Session::put('orderNumber', $orderNumber);
 
         //save data to new order table////
         $order = new NewOrder();
@@ -423,24 +460,27 @@ class MainFrontendController extends Controller
                     'price' => $cartItemData['price'],
                     'total' => $cartItemData['total'],
                 ]);
-
+                $allProductPriseTotal  += $cartItemData['total'];
                 $orderedProduct->save();
                 $order->orderedProducts()->attach($orderedProduct);
             }
             $order->save();
+            if ($cart && !Auth::user()) {
+                $productsInCart = $cart;
+
+                session([
+                    'orderNumber' => $orderNumber,
+                    'selectedShippingMethod' => $selectedShippingMethod,
+                    'selectedPaymentMethod' => $selectedPaymentMethod,
+                    'allProductPriseTotal' => $allProductPriseTotal,
+                    'city' => $city,
+                    'orderDate' => $orderDate,
+                    'orderTime' => $orderTime,
+                ]);
+            }
             Session::forget('cart');
         }
-
-        return view('layouts.frontend-user-side.saved-order', [
-            'selectedShippingMethod' => $selectedShippingMethod,
-            'selectedPaymentMethod' => $selectedPaymentMethod,
-            'city' => $city,
-            'orderNumber' => $orderNumber,
-            'orderDate' => $orderDate,
-            'ordertTime' => $ordertTime,
-            'allProductPriseTotal' => $allProductPriseTotal,
-            'productsInCart' => $productsInCart
-        ]);
+        return redirect()->route('new.order');
     }
 
 

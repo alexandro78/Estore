@@ -28,8 +28,10 @@ class RedirectIfAuthenticated
                 }
                 return redirect(RouteServiceProvider::HOME);
             }
+            else {
+                Session::forget('cart');
+            }
         }
-
         return $next($request);
     }
 }

@@ -47,7 +47,6 @@ class ShowProductsTape extends Component
     {
         $this->updateFilter();
 
-
         // TODO: замінити у всих місцях на таку перевірку
         $customerId = $this->checkAuth();
         //////////////////////////////////////////////////
