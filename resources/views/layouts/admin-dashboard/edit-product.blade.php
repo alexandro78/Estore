@@ -138,13 +138,33 @@
                         </x-slot>
                     </x-adminlte-input-file>
                 </div>
-                <div class="col-sm-8">
+                <div class="col-sm-8 modal-container" id="modal-image-container" data-product-id="{{ $id }}">
                     @foreach ($thumbnails as $imageId => $thumbnailPath)
-                        <div class="image-container">
-                            <img class="thumbnail-img" src="{{ asset($thumbnailPath) }}" alt="Изображение">
+                        @php
+                            // Extract the file name from the thumbnail path
+                            $thumbnailFilename = pathinfo($thumbnailPath, PATHINFO_FILENAME);
+                            // Form the full path to the original image
+                            $originalImagePath = $originalImageDirectory . $thumbnailFilename . '.' . pathinfo($thumbnailPath, PATHINFO_EXTENSION);
+                        @endphp
+
+                        <div id="main-img-container" class="image-container">
+                            <img class="thumbnail-img" src="{{ asset($thumbnailPath) }}" alt="Изображение"
+                                data-original-src="{{ asset($originalImagePath) }}"
+                                data-is-main="{{ $mainImg[$imageId] }}" data-imageId="{{ $imageId }}">
                             <a class="close-link"
                                 href="{{ route('image.delete.by.id', ['id' => $imageId, 'productId' => $id]) }}">
                                 <span class="close-icon">&times;</span>
+                            </a>
+                        </div>
+
+                        <div class="modal">
+                            <span class="close-modal">&times;</span>
+                            <img class="modal-content">
+                            <span class="arrow left-arrow">&#9664;</span>
+                            <span class="arrow right-arrow">&#9654;</span>
+
+                            <a href="#" class="set-main-image-link">
+                                <span class="set-main-image-button">Головне фото</span>
                             </a>
                         </div>
                     @endforeach
@@ -163,6 +183,7 @@
             <br><br>
         </div>
     </form>
+
     <script>
         const labels = document.querySelectorAll('label');
         labels.forEach(label => {
@@ -172,6 +193,162 @@
                 'Завантажити зображення' && labelText !== 'Завантажити декілька зображень') {
                 label.innerHTML += '<span style="color: red;">*</span>';
             }
+        });
+
+        /////////////////////***** modal image popup *****/////////////////
+        // Get all elements with class 'thumbnail-img'
+        var thumbnailImages = document.querySelectorAll('.thumbnail-img');
+        // Getting a modal window
+        var modal = document.querySelector('.modal');
+        var modalImage = document.querySelector('.modal-content');
+        var leftArrow = document.querySelector('.left-arrow');
+        var rightArrow = document.querySelector('.right-arrow');
+        var currentImageIndex = 0;
+        var imagesCount = thumbnailImages.length;
+        var imageId;
+
+        // Function for switching images left and right
+        function changeImage(direction) {
+            var newIndex = currentImageIndex + direction;
+
+            if (newIndex < 0) {
+                newIndex = imagesCount - 1;
+            } else if (newIndex >= imagesCount) {
+                newIndex = 0;
+            }
+
+            if (newIndex !== currentImageIndex) {
+                currentImageIndex = newIndex;
+                var newImage = thumbnailImages[currentImageIndex].getAttribute('data-original-src');
+                modalImage.src = newImage;
+
+                //Get the imageId from the current thumbnail/////////////////////
+                imageId = thumbnailImages[currentImageIndex].getAttribute('data-imageId');
+                // console.log(imageId);
+
+                // Call the method to check the "Head Photo" button
+                checkLinkOnMain(thumbnailImages[currentImageIndex].getAttribute('data-is-main'));
+            }
+        }
+
+        // Left arrow click handler
+        leftArrow.addEventListener('click', function() {
+            if (currentImageIndex > 0) {
+                changeImage(-1);
+            }
+        });
+
+        // Right arrow click handler
+        rightArrow.addEventListener('click', function() {
+            if (currentImageIndex < imagesCount - 1) {
+                changeImage(1);
+            }
+        });
+
+        ///////////////////////////////////////////////////////////////////////////
+        // Click event handler for thumbnails
+        thumbnailImages.forEach(function(thumbnailImage) {
+            thumbnailImage.addEventListener('click', function() {
+                // Get the 'data-original-src' attribute from the thumbnail
+                var originalSrc = this.getAttribute('data-original-src');
+                //Getting the value of the 'data-is-main' attribute
+                var isMain = this.getAttribute('data-is-main');
+
+                // Get the 'data-imageId' attribute from the thumbnail
+                imageId = this.getAttribute('data-imageId');
+
+                // Set the src of the image in the modal window
+                modalImage.src = originalSrc;
+
+                // Displaying a modal window
+                modal.style.display = 'block';
+
+                checkLinkOnMain(isMain);
+
+            });
+        });
+
+        function checkLinkOnMain(isMain) {
+            var setMainImageButton = document.querySelector('.set-main-image-button');
+            console.log('555555 ', isMain);
+            if (isMain === "1") {
+                // We get the <a> element
+                setMainImageButton.textContent = 'Головне фото';
+
+                // disable clicking on the link
+                var setMainImageLink = document.querySelector('.set-main-image-link');
+                setMainImageLink.addEventListener('click', preventDefaultClick);
+
+            } else {
+                setMainImageButton.textContent = 'Обрати головним';
+
+                //enable click action 
+                var setMainImageLink = document.querySelector('.set-main-image-link');
+                setMainImageLink.removeEventListener('click', preventDefaultClick);
+            }
+        }
+
+        // Function to prevent clicking
+        function preventDefaultClick(event) {
+            event.preventDefault();
+        }
+
+        ////////////////////////////////////////////////////////////////////////
+        // Click event handler for closing a modal window
+        var closeModal = document.querySelector('.close-modal');
+        closeModal.addEventListener('click', function() {
+            // Hiding a modal window
+            modal.style.display = 'none';
+        });
+
+        // Close the modal window if the user clicks outside the image
+        window.addEventListener('click', function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+
+        document.querySelectorAll('.set-main-image-link').forEach(function(link) {
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+
+                // Get the text (textContent) of the current link and assign it to "Golovne Photo"
+                const linkText = this.querySelector('.set-main-image-button').textContent;
+                this.querySelector('.set-main-image-button').textContent = "Головне фото";
+
+                // Getting element with id "modal-image-container"
+                var modalContainer = document.getElementById('modal-image-container');
+
+                // Getting "data-product-id" attribute value
+                var productId = modalContainer.getAttribute('data-product-id');
+
+                // code to send data to the server
+                const data = {
+                    imageId: imageId,
+                    productId: productId
+                };
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '/choose-main-img');
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        xhr.responseText;
+                        const response = JSON.parse(xhr.responseText);
+                        const data = response.data;
+
+                        // Extract data from JSON response
+                        const mainImg = data.mainImg;
+
+                        //Go through each element and update the attributes
+                        thumbnailImages.forEach((thumbnailImage, index) => {
+                            const imageId = thumbnailImage.getAttribute('data-imageId');
+                            thumbnailImage.setAttribute('data-is-main', mainImg[imageId]);
+                        });
+                    }
+                };
+                xhr.setRequestHeader('X-CSRF-TOKEN', '{{ csrf_token() }}');
+                xhr.send(JSON.stringify(data));
+            });
         });
     </script>
 

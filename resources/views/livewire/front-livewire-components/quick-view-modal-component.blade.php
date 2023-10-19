@@ -57,20 +57,20 @@
                                         @if (Auth::check())
                                             {{-- auth()->check() --}}
                                             @if ($checkIfItemAdded)
-                                                <button style="background-color: green; color: white;" type="submit"
+                                                <button wire:click="$emit('updateCartHeader')" style="background-color: green; color: white;" type="submit"
                                                     name="addtocart" value="{{ $productId }}"
                                                     class="cart-submit">Added</button>
                                             @else
-                                                <button type="submit" name="addtocart" value="{{ $productId }}"
+                                                <button wire:click="$emit('updateCartHeader')" type="submit" name="addtocart" value="{{ $productId }}"
                                                     class="cart-submit">ADD TO CART</button>
                                             @endif
                                         @else
                                             @if ($sessionCartItem)
-                                                <button style="background-color: green; color: white;" type="submit"
+                                                <button wire:click="$emit('updateCartHeader')" style="background-color: green; color: white;" type="submit"
                                                     name="addtocart" value="{{ $productId }}"
                                                     class="cart-submit">Added</button>
                                             @else
-                                                <button type="submit" name="addtocart" value="{{ $productId }}"
+                                                <button wire:click="$emit('updateCartHeader')" type="submit" name="addtocart" value="{{ $productId }}"
                                                     class="cart-submit">ADD TO CART</button>
                                             @endif
                                         @endif

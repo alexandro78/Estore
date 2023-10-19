@@ -16,16 +16,17 @@ class HeaderLivewireComponent extends Component
     public $allProductQuantity = 0;
 
     protected $listeners = [
-        'updateFilter' => 'updateHeaderCart'
+        'updateFilter' => 'updateHeaderCartAction', //'updateFilter' was taken so as not to write a new event for updating the cart header when the add to cart button is clicked
+        'updateCartHeader' => 'updateHeaderCartAction',
     ];
 
     public function __construct()
     {
         // Session::forget('cart');
-        $this->updateHeaderCart();
+        $this->updateHeaderCartAction();
     }
 
-    public function updateHeaderCart()
+    public function updateHeaderCartAction()
     {
         if (Auth::id()) {
             $userId = User::find(Auth::id());

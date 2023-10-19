@@ -106,7 +106,7 @@ class MainFrontendController extends Controller
     public function getProductBySize($id, $productSizeId)
     {
         $customerId = $this->checkAuth();
-
+        $cartItem = null;
         if ($customerId) {
             $cart = Cart::where('customer_id', $customerId)->first();
             $cartItem = $cart->relatedProducts->find($id);

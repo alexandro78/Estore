@@ -35,13 +35,14 @@ class MainAdminController extends Controller
 
 
 
-    function generateClosure($name) {
+    function generateClosure($name)
+    {
         return function () use ($name) {
             // Использование переменной $name из внешнего контекста
             return "Hello, $name!";
         };
     }
-    
+
 
     public function getCustomers()
     {
@@ -114,7 +115,7 @@ class MainAdminController extends Controller
                 // Создание экземпляра Intervention Image для каждого изображения
                 $img = Image::make($image);
                 $img->orientate();
-                
+
                 $newImage = new ImageModel();
                 $filename = $image->getClientOriginalName();
                 $newImage->filename = $filename;
@@ -141,6 +142,25 @@ class MainAdminController extends Controller
         $productFields = Product::find($id);
 
         $thumbnails = [];
+        $mainImg = [];
+        $this->getImage($productFields, $thumbnails, $mainImg);
+
+        return view('layouts.admin-dashboard.edit-product', [
+            'id' => $id,
+            'productFields' => $productFields,
+            'categories' => Category::all(),
+            'discounts' => Discount::all(),
+            'sizes' => Size::all(),
+            'thumbnails' => $thumbnails,
+            'originalImageDirectory' => 'images/multimedia/',
+            'mainImg' => $mainImg,
+            'isMainImg' => 0
+        ]);
+    }
+
+    /////pivat function for showEditProductById($id)//////////////////////
+    private function getImage(&$productFields, &$thumbnails, &$mainImg)
+    {
         foreach ($productFields->images as $image) {
             $thumbnailPath = 'images/thumbnails/' . $image->filename; // Путь для сохранения миниатюры
             $thumbnailExists = file_exists(public_path($thumbnailPath)); // Проверка наличия миниатюры
@@ -151,17 +171,11 @@ class MainAdminController extends Controller
                 $thumbnail->save(public_path($thumbnailPath));
                 $thumbnails[$image->id] = $thumbnailPath;
             }
+            //Get the value of mainImg and store it in an array
+            $mainImg[$image->id] = $image->is_main; //TODO: отримати бульове значення з поля mainImg таблиці images
         }
-
-        return view('layouts.admin-dashboard.edit-product', [
-            'id' => $id,
-            'productFields' => $productFields,
-            'categories' => Category::all(),
-            'discounts' => Discount::all(),
-            'sizes' => Size::all(),
-            'thumbnails' => $thumbnails
-        ]);
     }
+
 
     public function imageDeleteById($id, $productId)
     {
@@ -179,10 +193,40 @@ class MainAdminController extends Controller
 
         $image->delete();
         return redirect()->route('edit.product.page', ['id' => $productId]);
-
     }
 
-    //получает в таблицу все продукты из базы
+    public function chooseMainImage(Request $request)
+    {
+        //TODO: implement select main image
+        $data = $request->json()->all();
+        $imageId = $data['imageId'];
+        $productId = $data['productId'];
+        $productFields = Product::find($productId);
+
+        ImageModel::where('is_main', 1)->update(['is_main' => 0]);
+        $image = ImageModel::find($imageId);
+        $image->is_main = 1;
+        $image->save();
+
+        $thumbnails = [];
+        $mainImg = [];
+        $originalImageDirectory = 'images/multimedia/';
+
+        $this->getImage($productFields, $thumbnails, $mainImg);
+
+        // Create an associative array to hold all the variables
+        $data = [
+            'productFields' => $productFields,
+            'thumbnails' => $thumbnails,
+            'mainImg' => $mainImg,
+            'originalImageDirectory' => $originalImageDirectory,
+        ];
+
+        return response()->json(['data' => $data]);
+        // return response()->json(['name' => $data['size']]);
+    }
+
+    //gets all products from the database into the table
     public function getProduct()
     {
         $products = Product::all();
@@ -286,7 +330,7 @@ class MainAdminController extends Controller
     }
 
 
-    //удаляет продукт по id
+    //delete the product by id
     public function productDelete($id)
     {
         Product::destroy($id);

@@ -341,7 +341,7 @@ return [
         // ['header' => 'account_settings'],
         [
             'text' => 'Профіль',
-            'url'  => '/',
+            'url'  => 'dashboard/',
             'icon' => 'fas fa-fw fa-user',
         ],
         [
@@ -350,7 +350,7 @@ return [
             'submenu' => [
                 [
                     'text' => 'Переглянуты',
-                    'url'  => 'customers',
+                    'url'  => 'dashboard/customers',
                     'icon' => 'fas fa-solid fa-eye',
                 ],
                 [
@@ -367,14 +367,14 @@ return [
                 [
                     'text' => 'Переглянуты',
                     'icon' => 'fas fa-solid fa-eye',
-                    'url'     => 'category',
+                    'url'     => 'dashboard/category',
                 ],
             ],
         ],
         [
             'text'    => 'Розміри',
             'icon'    => 'fas fa-fw fa-ruler',
-            'url'     => 'size-table',
+            'url'     => 'dashboard/size-table',
         ],
 
         [
@@ -388,12 +388,12 @@ return [
                 [
                     'text'    => 'Всі товари',
                     'icon'    => 'fas fa-fw fa-th-list',
-                    'url'     => 'product',
+                    'url'     => 'dashboard/product',
                 ],
                 [
                     'text'    => 'Додати товар',
                     'icon'    => 'fas fa-solid fa-cart-plus',
-                    'url'     => 'add-product-page',
+                    'url'     => 'dashboard/add-product-page',
                 ],
             ],
         ],
@@ -404,12 +404,12 @@ return [
             'submenu' => [
                 [
                     'text' => 'Всі знижки',
-                    'url'     => 'discount',
+                    'url'     => 'dashboard/discount',
                     'icon'    => 'fas fa-fw fa-fire',
                 ],
                 [
                     'text' => 'Створити знижку',
-                    'url'  => 'add-discount-page',
+                    'url'  => 'dashboard/add-discount-page',
                     'icon'    => 'fas fa-fw fa-plus',
                 ],
             ],
@@ -420,12 +420,12 @@ return [
         [
             'text'       => 'Нові замовлення',
             'icon_color' => 'green',
-            'url'        => 'orders',
+            'url'        => 'dashboard/orders',
         ],
         [
             'text'       => 'Повідомлення',
             'icon_color' => 'yellow',
-            'url'        => 'message',
+            'url'        => 'dashboard/message',
         ],
     ],
 
@@ -466,6 +466,11 @@ return [
         'Datatables' => [
             'active' => true,
             'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => '/backend-style.css',
+                ],
                 [
                     'type' => 'js',
                     'asset' => true,
